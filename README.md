@@ -1,5 +1,4 @@
-# heurisko
-## An open source parallel metaheuristic framework.
+# Heurisko - An open source parallel metaheuristic framework.
 
 List of implemented population-based metaheuristics:
 - Differential Evolution
