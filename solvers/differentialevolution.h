@@ -45,9 +45,17 @@ public:
 
         // Stores the objective value of each individual
         vector<double> individualsFitness(this->numberOfAgents);
-        //#pragma omp parallel for
+#pragma omp parallel for
         for (size_t i = 0; i < this->numberOfAgents; i++) {
-            individualsFitness[i] = this->problem->evaluate(individuals[i]);
+            switch (this->problem->getRepType()) {
+            case RepresentationType::DIRECT:
+                individualsFitness[i] = this->problem->evaluate(individuals[i]);
+                break;
+            case RepresentationType::INDIRECT:
+                shared_ptr<Solution<T>> sol = this->problem->construct(individuals[i]);
+                individualsFitness[i] = sol->getFitness();
+                break;
+            }
 #pragma omp critical
             this->updateGlobalBest(individuals[i], individualsFitness[i], true);
         }
@@ -87,28 +95,16 @@ public:
 
             switch (this->problem->getStrategy()) {
             case OptimizationStrategy::MINIMIZE:
-                //#pragma omp parallel for
+#pragma omp parallel for
                 for (size_t i = 0; i < this->numberOfAgents; i++) {
                     switch (this->problem->getRepType()) {
                     case RepresentationType::DIRECT:
                         newIndividualsFitness[i] = this->problem->evaluate(newIndividuals[i]);
                         break;
                     case RepresentationType::INDIRECT:
-                        /*for (size_t l1 = 0; l1 < this->problem->getDimension(); l1++) {
-                            cout << newIndividuals[i][l1] << ", ";
-                        }
-                        cout << endl;*/
-
                         shared_ptr<Solution<T>> sol = this->problem->construct(newIndividuals[i]);
                         newIndividualsFitness[i] = sol->getFitness();
-
-                        // this->problem->localSearch(sol);
-
-                        /*for (size_t l1 = 0; l1 < this->problem->getDimension(); l1++) {
-                            cout << newIndividuals[i][l1] << ", ";
-                        }
-                        cout << endl;
-                        exit(0);*/
+                        break;
                     }
 
                     if (newIndividualsFitness[i] <= individualsFitness[i]) {

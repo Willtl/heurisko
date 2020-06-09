@@ -27,5 +27,6 @@ HEADERS += \
     solvers/greywolfoptimizer.h \
     solvers/particleswarmoptimization.h \
     solvers/solver.h \
-    util/util.h
+    util/util.h \
+    examples/combinatorial/indirect/tsp.h \
 

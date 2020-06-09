@@ -89,7 +89,15 @@ public:
 #pragma omp parallel for
             for (size_t i = 0; i < this->numberOfAgents; i++) {
                 // Evaluate child1
-                newIndividuals1Fitness[i] = this->problem->evaluate(newIndividuals1[i]);
+                switch (this->problem->getRepType()) {
+                case RepresentationType::DIRECT:
+                    newIndividuals1Fitness[i] = this->problem->evaluate(newIndividuals1[i]);
+                    break;
+                case RepresentationType::INDIRECT:
+                    shared_ptr<Solution<T>> sol = this->problem->construct(newIndividuals1[i]);
+                    newIndividuals1Fitness[i] = sol->getFitness();
+                    break;
+                }
 #pragma omp critical
                 this->updateGlobalBest(newIndividuals1[i], newIndividuals1Fitness[i], true);
                 // Evaluate child2

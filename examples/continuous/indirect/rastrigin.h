@@ -12,8 +12,8 @@ public:
     {
         this->dimension = dimension;
 
-        /*if(utils::getRandom() <= 0.0001)
-            this->localSearch();*/
+        if(utils::getRandom() <= 0.0001)
+            this->localSearch();
 
         double A = 10, sum = 0;
         for (size_t i = 0; i < dimension; i++) {
@@ -45,15 +45,6 @@ public:
             lb[i] = -5.12;
             ub[i] = 5.12;
         }
-    }
-
-    double evaluate(const vector<encoding> &decisionVariables) override
-    {
-        double A = 10, sum = 0;
-        for (size_t i = 0; i < this->dimension; i++) {
-            sum += std::pow(decisionVariables[i], 2) - A * cos(2 * M_PI * decisionVariables[i]);
-        }
-        return A * dimension + sum;
     }
 
     std::shared_ptr<Solution<double>> construct(std::vector<encoding> &decisionVariables) override

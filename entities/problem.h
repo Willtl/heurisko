@@ -23,13 +23,13 @@ public:
 
     virtual double evaluate(const std::vector<T> &decisionVariables)
     {
-        std::cerr << "You must override this function in your derived class" << std::endl;
+        std::cerr << "You must override @evaluate in your derived class" << std::endl;
         exit(EXIT_FAILURE);
     }
 
     virtual std::shared_ptr<Solution<T>> construct(std::vector<T> &decisionVariables)
     {
-        std::cerr << "You must override this function in your derived class" << std::endl;
+        std::cerr << "You must override @construct in your derived class" << std::endl;
         exit(EXIT_FAILURE);
     }
 
