@@ -1,4 +1,4 @@
-# Heurisko - An C++ open source parallel metaheuristic framework
+# Heurisko - C++ open source parallel metaheuristic framework
 
 List of implemented population-based metaheuristics:
 - Differential Evolution
