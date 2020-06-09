@@ -5,22 +5,18 @@
 #include "../entities/solution.h"
 #include <memory>
 
-template <class T>
-class Solver
-{
-public:
+template <class T> class Solver {
+    public:
     enum StoppingCriteria { Iteration, Time };
     void setMaxIterations(int maxNumberOfIterations) { maxIterations = maxNumberOfIterations; }
-    void setRunningTime(double seconds)
-    {
+    void setRunningTime(double seconds) {
         utils::maxRunningTime = seconds;
         runningTime = seconds;
     }
     virtual void solve() = 0;
 
-protected:
-    Solver(std::shared_ptr<Problem<T>> prob)
-    {
+    protected:
+    Solver(std::shared_ptr<Problem<T>> prob) {
         this->problem = prob;
         switch (this->problem->getStrategy()) {
         case OptimizationStrategy::MINIMIZE:

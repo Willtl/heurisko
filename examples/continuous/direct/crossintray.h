@@ -3,18 +3,16 @@
 
 #include "../../../entities/problem.h"
 
-class CrossInTrayFunction : public Problem<double>
-{
-public:
-    CrossInTrayFunction(OptimizationStrategy strategy, RepresentationType repType) : Problem(strategy, repType)
-    {
-        this->lb = vector<double>{-10, -10};
-        this->ub = vector<double>{10, 10};
+class CrossInTrayFunction : public Problem<double> {
+    public:
+    CrossInTrayFunction(OptimizationStrategy strategy, RepresentationType repType)
+        : Problem(strategy, repType) {
+        this->lb = std::vector<double>{-10, -10};
+        this->ub = std::vector<double>{10, 10};
         this->dimension = 2;
     }
 
-    double evaluate(const vector<double> &decisionVariables) override
-    {
+    double evaluate(const std::vector<double> &decisionVariables) override {
         const double x = decisionVariables[0];
         const double y = decisionVariables[1];
 

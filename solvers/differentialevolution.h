@@ -9,13 +9,9 @@
 
 using namespace std;
 
-template <class T>
-class DifferentialEvolution : public GlobalSolver<T>
-{
-public:
-    DifferentialEvolution(int numberOfIndividuals, float recombinationRate, float differentialWeight, shared_ptr<Problem<T>> prob)
-        : GlobalSolver<T>(numberOfIndividuals, prob)
-    {
+template <class T> class DifferentialEvolution : public GlobalSolver<T> {
+    public:
+    DifferentialEvolution(int numberOfIndividuals, float recombinationRate, float differentialWeight, shared_ptr<Problem<T>> prob) : GlobalSolver<T>(numberOfIndividuals, prob) {
         if (this->numberOfAgents < 4) {
             cerr << "The number of individuals needs to be equal or higher than 4" << endl;
             exit(EXIT_FAILURE);
@@ -26,10 +22,11 @@ public:
         puts("DifferentialEvolution instantiated");
     }
 
-    void solve()
-    {
+    void solve() {
         if (this->maxIterations == 0 && this->runningTime == 0) {
-            cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to define a stopping criteria!" << endl;
+            cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
+                "define a stopping criteria!"
+                 << endl;
             exit(EXIT_FAILURE);
         } else
             cout << "Starting DifferentialEvolution search procedure" << endl;
@@ -82,12 +79,12 @@ public:
 
                 int R = utils::getRandom(this->problem->getDimension() - 1);
                 for (size_t j = 0; j < this->problem->getDimension(); j++) {
-                    // newIndividuals[x][i] = this->prob->getFeasibleDecisionVariable(i);
+                    // newIndividuals[x][i] =
+                    // this->prob->getFeasibleDecisionVariable(i);
 
                     if (utils::getRandom() < recombinationRate || j == R) {
                         newIndividuals[i][j] =
-                            max(this->problem->getLb()[j],
-                            min(individuals[a][j] + (differentialWeight * (individuals[b][j] - individuals[c][j])), this->problem->getUb()[j]));
+                            max(this->problem->getLb()[j], min(individuals[a][j] + (differentialWeight * (individuals[b][j] - individuals[c][j])), this->problem->getUb()[j]));
                     } else
                         newIndividuals[i][j] = individuals[i][j];
                 }
@@ -100,23 +97,26 @@ public:
                     switch (this->problem->getRepType()) {
                     case RepresentationType::DIRECT:
                         newIndividualsFitness[i] = this->problem->evaluate(newIndividuals[i]);
+                        if (newIndividualsFitness[i] <= individualsFitness[i]) {
+                            individuals[i] = newIndividuals[i];
+                            individualsFitness[i] = newIndividualsFitness[i];
+                            this->updateGlobalBest(individuals[i], individualsFitness[i], true);
+                        }
                         break;
                     case RepresentationType::INDIRECT:
                         shared_ptr<Solution<T>> sol = this->problem->construct(newIndividuals[i]);
                         newIndividualsFitness[i] = sol->getFitness();
+                        if (newIndividualsFitness[i] <= individualsFitness[i]) {
+                            individuals[i] = newIndividuals[i];
+                            individualsFitness[i] = newIndividualsFitness[i];
+                            this->updateGlobalBest(individuals[i], individualsFitness[i], true, sol);
+                        }
                         break;
-                    }
-
-                    if (newIndividualsFitness[i] <= individualsFitness[i]) {
-                        individuals[i] = newIndividuals[i];
-                        individualsFitness[i] = newIndividualsFitness[i];
-#pragma omp critical
-                        this->updateGlobalBest(individuals[i], individualsFitness[i], true);
                     }
                 }
                 break;
             case OptimizationStrategy::MAXIMIZE:
-                //#pragma omp parallel for
+#pragma omp parallel for
                 for (size_t i = 0; i < this->numberOfAgents; i++) {
                     newIndividualsFitness[i] = this->problem->evaluate(newIndividuals[i]);
                     if (newIndividualsFitness[i] >= individualsFitness[i]) {
@@ -129,13 +129,25 @@ public:
                 break;
             }
         }
-        cout << "Best solution " << this->globalBestFitness << " Running time: " << utils::getCurrentTime() << endl << "Best solution decision variables: ";
-        utils::printVector(this->globalBest);
 
-        cout << "Number of tried solutions " << this->problem->getNumbTriedSolution() << endl;
+        switch (this->problem->getRepType()) {
+        case RepresentationType::DIRECT:
+            cout << "Best solution " << this->globalBestFitness << " Running time: " << utils::getCurrentTime() << endl << "Best decision variables: ";
+            utils::printVector(this->globalBest);
+            cout << "Number of tried solutions " << this->problem->getNumbTriedSolution() << endl;
+            break;
+        case RepresentationType::INDIRECT:
+            std::cout << "Best solution " << this->globalBestFitness << " Running time: " << utils::getCurrentTime() << endl;
+            std::cout << "Best decision variables: ";
+            utils::printVector(this->globalBest);
+            std::cout << "Best solution: ";
+            this->bestSolution->print();
+            cout << "Number of tried solutions " << this->problem->getNumbTriedSolution() << endl;
+            break;
+        }
     }
 
-private:
+    private:
     float recombinationRate;
     float differentialWeight;
 };
