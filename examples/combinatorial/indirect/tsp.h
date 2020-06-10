@@ -28,10 +28,10 @@ std::map<std::string, int> distances;
 
 double euclideanDistance(std::shared_ptr<Vector2> node1, std::shared_ptr<Vector2> node2) { return sqrt(pow(node2->x - node1->x, 2) + pow(node2->y - node1->y, 2)); }
 
-void createNodes(const std::vector<double> xnodes, const std::vector<double> ynodes) {
-    nodes = std::vector<std::shared_ptr<Vector2>>(xnodes.size());
-    for (size_t i = 0; i < xnodes.size(); i++)
-        nodes[i] = std::shared_ptr<Vector2>(new Vector2(xnodes[i], ynodes[i]));
+void createNodes(const std::vector<std::pair<int, int>> rawNodes) {
+    nodes = std::vector<std::shared_ptr<Vector2>>(rawNodes.size());
+    for (size_t i = 0; i < rawNodes.size(); i++)
+        nodes[i] = std::shared_ptr<Vector2>(new Vector2(rawNodes[i].first, rawNodes[i].second));
 }
 
 std::string composeKey(std::shared_ptr<Vector2> node1, std::shared_ptr<Vector2> node2) {
@@ -107,7 +107,7 @@ class TSPSolution : public Solution<encoding> {
 
 class TravellingSalesmanProblem : public Problem<encoding> {
     public:
-    TravellingSalesmanProblem(int dimension, const std::vector<double> xnodes, const std::vector<double> ynodes, OptimizationStrategy strategy, RepresentationType repType)
+    TravellingSalesmanProblem(int dimension, const std::vector<std::pair<int, int>> rawNodes, OptimizationStrategy strategy, RepresentationType repType)
         : Problem(strategy, repType) {
         this->lb = std::vector<encoding>(dimension);
         this->ub = std::vector<encoding>(dimension);
@@ -118,12 +118,13 @@ class TravellingSalesmanProblem : public Problem<encoding> {
             ub[i] = nextafter(1.0, 0.0);
         }
 
-        tsp::createNodes(xnodes, ynodes);
+        tsp::createNodes(rawNodes);
         tsp::calculateDistances();
     }
 
     std::shared_ptr<Solution<double>> construct(std::vector<encoding> &decisionVariables) override {
         std::shared_ptr<TSPSolution> solution(new TSPSolution(this->dimension, decisionVariables));
+        numbTriedSolution++;
         return solution;
     }
 };

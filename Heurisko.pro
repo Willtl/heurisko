@@ -28,5 +28,7 @@ HEADERS += \
     solvers/particleswarmoptimization.h \
     solvers/solver.h \
     util/util.h \
+    util/tspreader.h \
     examples/combinatorial/indirect/tsp.h \
+
 

@@ -56,6 +56,7 @@ template <class T> class Problem {
 
     protected:
     Problem(OptimizationStrategy strategy, RepresentationType repType) {
+        this->numbTriedSolution = 0;
         this->strategy = strategy;
         this->repType = repType;
     }

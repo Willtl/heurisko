@@ -13,22 +13,27 @@
 #include "solvers/geneticalgorithm.h"
 #include "solvers/greywolfoptimizer.h"
 #include "solvers/particleswarmoptimization.h"
+#include "util/tspreader.h"
 #include "util/util.h"
 
 int main(int argc, char *argv[]) {
-    std::vector<double> xnodes = {0, 1, 2, 3, 4, 5, 6, 7, 8, 7, 5};
-    std::vector<double> ynodes = {0, 2, 3, 3, 4, 5, 4, 3, 2, 1, 0};
-    std::shared_ptr<TravellingSalesmanProblem> tsp(new TravellingSalesmanProblem(xnodes.size(), xnodes, ynodes, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT));
+    // std::vector<std::pair<int, int>> rawNodes = reader::readTSPInstance("E:/Users/main/Documents/GitHub/heurisko/examples/instances/tsp/a280.tsp");
+    std::vector<std::pair<int, int>> rawNodes = reader::readTSPInstance("E:/Users/main/Documents/GitHub/heurisko/examples/instances/tsp/eil51.tsp");
 
-    /*DifferentialEvolution<encoding> de(32, 0.001, 0.5, tsp);
-    de.setRunningTime(3);
-    de.solve();*/
+    //    std::vector<double> xnodes = {0, 1, 2, 3, 4, 5, 6, 7, 8, 7, 5};
+    //    std::vector<double> ynodes = {0, 2, 3, 3, 4, 5, 4, 3, 2, 1, 0};
+    // rawNodes = {{0, 0}, {1, 2}, {2, 3}, {3, 3}, {4, 4}, {5, 5}, {6, 4}, {7, 3}, {8, 2}, {7, 1}, {5, 0}};
+    std::shared_ptr<TravellingSalesmanProblem> tsp(new TravellingSalesmanProblem(rawNodes.size(), rawNodes, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT));
 
-    GeneticAlgorithm<double> ga(32, 0.8, 0.01, CrossoverType::UNIFORM, SelectionType::TOURNAMENT, MutationType::POLYNOMIAL, tsp);
+    DifferentialEvolution<encoding> de(32, 0.005, 0.25, tsp);
+    de.setRunningTime(10);
+    de.solve();
+
+    /*GeneticAlgorithm<double> ga(32, 0.8, 0.01, CrossoverType::UNIFORM, SelectionType::TOURNAMENT, MutationType::POLYNOMIAL, tsp);
     ga.setRunningTime(600.0);
     ga.setEtaC(2.0);
     ga.setEtaM(20.0);
-    ga.solve();
+    ga.solve();*/
 
     /*std::vector<double> decisionVariables(4);
     tsp->fillRandomDecisionVariables(decisionVariables);

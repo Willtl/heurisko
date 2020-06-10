@@ -43,7 +43,7 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
         // Stores the objective value of each individual
         vector<double> individualsFitness(this->numberOfAgents);
 #pragma omp parallel for
-        for (size_t i = 0; i < this->numberOfAgents; i++) {
+        for (int i = 0; i < this->numberOfAgents; i++) {
             switch (this->problem->getRepType()) {
             case RepresentationType::DIRECT:
                 individualsFitness[i] = this->problem->evaluate(individuals[i]);
@@ -65,7 +65,7 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
         int iteration = -1;
         while (iteration++ < this->maxIterations || utils::getCurrentTime() < this->runningTime) {
 #pragma omp parallel for
-            for (size_t i = 0; i < this->numberOfAgents; i++) {
+            for (int i = 0; i < this->numberOfAgents; i++) {
                 // Pick 3 different agents
                 int a = utils::getRandom(this->numberOfAgents - 1);
                 int b = utils::getRandom(this->numberOfAgents - 1);
@@ -93,7 +93,7 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
             switch (this->problem->getStrategy()) {
             case OptimizationStrategy::MINIMIZE:
 #pragma omp parallel for
-                for (size_t i = 0; i < this->numberOfAgents; i++) {
+                for (int i = 0; i < this->numberOfAgents; i++) {
                     switch (this->problem->getRepType()) {
                     case RepresentationType::DIRECT:
                         newIndividualsFitness[i] = this->problem->evaluate(newIndividuals[i]);
@@ -117,7 +117,7 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
                 break;
             case OptimizationStrategy::MAXIMIZE:
 #pragma omp parallel for
-                for (size_t i = 0; i < this->numberOfAgents; i++) {
+                for (int i = 0; i < this->numberOfAgents; i++) {
                     newIndividualsFitness[i] = this->problem->evaluate(newIndividuals[i]);
                     if (newIndividualsFitness[i] >= individualsFitness[i]) {
                         individuals[i] = newIndividuals[i];
