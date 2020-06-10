@@ -16,17 +16,14 @@
 #include "util/tspreader.h"
 #include "util/util.h"
 
-int main(int argc, char *argv[]) {
-    // std::vector<std::pair<int, int>> rawNodes = reader::readTSPInstance("E:/Users/main/Documents/GitHub/heurisko/examples/instances/tsp/a280.tsp");
-    std::vector<std::pair<int, int>> rawNodes = reader::readTSPInstance("E:/Users/main/Documents/GitHub/heurisko/examples/instances/tsp/eil51.tsp");
-
-    //    std::vector<double> xnodes = {0, 1, 2, 3, 4, 5, 6, 7, 8, 7, 5};
-    //    std::vector<double> ynodes = {0, 2, 3, 3, 4, 5, 4, 3, 2, 1, 0};
-    // rawNodes = {{0, 0}, {1, 2}, {2, 3}, {3, 3}, {4, 4}, {5, 5}, {6, 4}, {7, 3}, {8, 2}, {7, 1}, {5, 0}};
+int main(int argc, char *argv[])
+{
+    std::vector<std::pair<int, int>> rawNodes = reader::readTSPInstance("/home/willian/Gitkraken/heurisko/examples/instances/tsp/simple.tsp");
+    // std::vector<std::pair<int, int>> rawNodes = reader::readTSPInstance("E:/Users/main/Documents/GitHub/heurisko/examples/instances/tsp/eil51.tsp");
     std::shared_ptr<TravellingSalesmanProblem> tsp(new TravellingSalesmanProblem(rawNodes.size(), rawNodes, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT));
 
     DifferentialEvolution<encoding> de(32, 0.005, 0.25, tsp);
-    de.setRunningTime(10);
+    de.setRunningTime(5);
     de.solve();
 
     /*GeneticAlgorithm<double> ga(32, 0.8, 0.01, CrossoverType::UNIFORM, SelectionType::TOURNAMENT, MutationType::POLYNOMIAL, tsp);
@@ -55,9 +52,9 @@ int main(int argc, char *argv[]) {
     ga.setEtaM(20.0);
     ga.solve();*/
 
-    //    GreyWolfOptimizer<double> gwo(32, problem);
-    //    gwo.setRunningTime(60.0);
-    //    gwo.solve();
+    /*GreyWolfOptimizer<double> gwo(32, problem);
+    gwo.setRunningTime(60.0);
+    gwo.solve();*/
 
     /*ParticleSwarmOptimization<double> pso(32, 2.05, 2.05, 0.4, 0.9, problem);
     pso.setRunningTime(120.0);

@@ -9,9 +9,13 @@
 
 using namespace std;
 
-template <class T> class DifferentialEvolution : public GlobalSolver<T> {
-    public:
-    DifferentialEvolution(int numberOfIndividuals, float recombinationRate, float differentialWeight, shared_ptr<Problem<T>> prob) : GlobalSolver<T>(numberOfIndividuals, prob) {
+template <class T>
+class DifferentialEvolution : public GlobalSolver<T>
+{
+public:
+    DifferentialEvolution(int numberOfIndividuals, float recombinationRate, float differentialWeight, shared_ptr<Problem<T>> prob)
+        : GlobalSolver<T>(numberOfIndividuals, prob)
+    {
         if (this->numberOfAgents < 4) {
             cerr << "The number of individuals needs to be equal or higher than 4" << endl;
             exit(EXIT_FAILURE);
@@ -22,7 +26,8 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
         puts("DifferentialEvolution instantiated");
     }
 
-    void solve() {
+    void solve()
+    {
         if (this->maxIterations == 0 && this->runningTime == 0) {
             cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
                 "define a stopping criteria!"
@@ -84,7 +89,8 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
 
                     if (utils::getRandom() < recombinationRate || j == R) {
                         newIndividuals[i][j] =
-                            max(this->problem->getLb()[j], min(individuals[a][j] + (differentialWeight * (individuals[b][j] - individuals[c][j])), this->problem->getUb()[j]));
+                            max(this->problem->getLb()[j],
+                            min(individuals[a][j] + (differentialWeight * (individuals[b][j] - individuals[c][j])), this->problem->getUb()[j]));
                     } else
                         newIndividuals[i][j] = individuals[i][j];
                 }
@@ -100,6 +106,7 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
                         if (newIndividualsFitness[i] <= individualsFitness[i]) {
                             individuals[i] = newIndividuals[i];
                             individualsFitness[i] = newIndividualsFitness[i];
+#pragma omp critical
                             this->updateGlobalBest(individuals[i], individualsFitness[i], true);
                         }
                         break;
@@ -109,6 +116,7 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
                         if (newIndividualsFitness[i] <= individualsFitness[i]) {
                             individuals[i] = newIndividuals[i];
                             individualsFitness[i] = newIndividualsFitness[i];
+#pragma omp critical
                             this->updateGlobalBest(individuals[i], individualsFitness[i], true, sol);
                         }
                         break;
@@ -147,7 +155,7 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
         }
     }
 
-    private:
+private:
     float recombinationRate;
     float differentialWeight;
 };

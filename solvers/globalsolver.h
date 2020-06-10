@@ -33,7 +33,6 @@ template <class T> class GlobalSolver : public Solver<T> {
     std::shared_ptr<Solution<T>> bestSolution;
 
     bool updateGlobalBest(const std::vector<double> individual, double fitness, bool printUpdate) {
-#pragma omp critical
         switch (this->problem->getStrategy()) {
         case OptimizationStrategy::MINIMIZE:
             if (fitness < globalBestFitness) {
@@ -58,7 +57,6 @@ template <class T> class GlobalSolver : public Solver<T> {
     }
 
     bool updateGlobalBest(const std::vector<double> individual, double fitness, bool printUpdate, std::shared_ptr<Solution<T>> solution) {
-#pragma omp critical
         switch (this->problem->getStrategy()) {
         case OptimizationStrategy::MINIMIZE:
             if (fitness < globalBestFitness) {
