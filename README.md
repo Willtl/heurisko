@@ -1,6 +1,6 @@
 # Heurisko - C++ open source parallel metaheuristic framework
 
-List of implemented population-based metaheuristics:
+### List of implemented population-based metaheuristics:
 - Differential Evolution
    - Mutation scheme variants:
       - DE/rand/1
@@ -17,3 +17,11 @@ List of implemented population-based metaheuristics:
 - Grey Wolf Optimizer
 - Whale Optimization Algorithm
 
+### Problems addressed with the framework in the examples folder:
+- Continuous optimization, non-convex functions
+   - Rastrigin
+   - Ackley
+- Combinatorial optimization
+   - Travelling salesman problem
+      - 2-opt-based local search
+      - swap-based local search
