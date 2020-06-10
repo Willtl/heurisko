@@ -16,14 +16,31 @@
 #include "util/tspreader.h"
 #include "util/util.h"
 
+void testWithSingleSolution(int dimension, std::shared_ptr<TravellingSalesmanProblem> tsp)
+{
+    // Create random solution for debugging
+    std::vector<double> decisionVariables(dimension);
+    tsp->fillRandomDecisionVariables(decisionVariables);
+    std::shared_ptr<TSPSolution> solution(new TSPSolution(dimension, decisionVariables));
+    utils::printVector<std::vector<double>>(decisionVariables);
+    utils::printVector<std::vector<int>>(solution->getPermutation());
+    std::cout << "Fitness: " << solution->getFitness() << "\n";
+    solution->localSearch();
+    utils::printVector<std::vector<double>>(decisionVariables);
+    utils::printVector<std::vector<int>>(solution->getPermutation());
+    std::cout << "Fitness: " << solution->getFitness() << "\n";
+}
+
 int main(int argc, char *argv[])
 {
-    std::vector<std::pair<int, int>> rawNodes = reader::readTSPInstance("/home/willian/Gitkraken/heurisko/examples/instances/tsp/simple.tsp");
+    std::vector<std::pair<int, int>> rawNodes = reader::readTSPInstance("/home/willian/Gitkraken/heurisko/examples/instances/tsp/eil51.tsp");
     // std::vector<std::pair<int, int>> rawNodes = reader::readTSPInstance("E:/Users/main/Documents/GitHub/heurisko/examples/instances/tsp/eil51.tsp");
     std::shared_ptr<TravellingSalesmanProblem> tsp(new TravellingSalesmanProblem(rawNodes.size(), rawNodes, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT));
 
-    DifferentialEvolution<encoding> de(32, 0.005, 0.25, tsp);
-    de.setRunningTime(5);
+    /*testWithSingleSolution(rawNodes.size(), tsp);
+    exit(0); */
+    DifferentialEvolution<encoding> de(8, 0.005, 0.25, tsp);
+    de.setRunningTime(300);
     de.solve();
 
     /*GeneticAlgorithm<double> ga(32, 0.8, 0.01, CrossoverType::UNIFORM, SelectionType::TOURNAMENT, MutationType::POLYNOMIAL, tsp);

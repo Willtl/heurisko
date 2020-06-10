@@ -25,7 +25,7 @@ template <class T> class Solution {
     }
 
     protected:
-    Solution(std::vector<T> &decisionVariables) : decisionVariables(decisionVariables) {}
+    Solution(std::vector<T> &decVariables) : decisionVariables(decVariables) {}
     double fitness;
     std::vector<T> &decisionVariables;
 };

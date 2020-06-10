@@ -11,9 +11,7 @@ QMAKE_CXXFLAGS += -O3 -fopenmp -pthread
 QMAKE_LFLAGS += -fopenmp
 
 SOURCES += main.cpp
-
-INCLUDEPATH += "/home/willian/workspace/qt/SatelliteStructureOptimization/eigen/Eigen"
-
+ 
 HEADERS += \
     entities/solution.h \
     entities/problem.h \
