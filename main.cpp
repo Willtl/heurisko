@@ -16,12 +16,11 @@
 #include "util/tspreader.h"
 #include "util/util.h"
 
-void testWithSingleSolution(int dimension, std::shared_ptr<TravellingSalesmanProblem> tsp)
-{
+void testWithSingleSolution(int dimension, std::shared_ptr<TravellingSalesmanProblem> tsp) {
     // Create random solution for debugging
     std::vector<double> decisionVariables(dimension);
     tsp->fillRandomDecisionVariables(decisionVariables);
-    std::shared_ptr<TSPSolution> solution(new TSPSolution(dimension, decisionVariables));
+    std::shared_ptr<TSPSolution> solution = std::make_shared<TSPSolution>(dimension, decisionVariables);
     utils::printVector<std::vector<double>>(decisionVariables);
     utils::printVector<std::vector<int>>(solution->getPermutation());
     std::cout << "Fitness: " << solution->getFitness() << "\n";
@@ -31,14 +30,13 @@ void testWithSingleSolution(int dimension, std::shared_ptr<TravellingSalesmanPro
     std::cout << "Fitness: " << solution->getFitness() << "\n";
 }
 
-int main(int argc, char *argv[])
-{
-    std::vector<std::pair<int, int>> rawNodes = reader::readTSPInstance("/home/willian/Gitkraken/heurisko/examples/instances/tsp/eil51.tsp");
-    // std::vector<std::pair<int, int>> rawNodes = reader::readTSPInstance("E:/Users/main/Documents/GitHub/heurisko/examples/instances/tsp/eil51.tsp");
-    std::shared_ptr<TravellingSalesmanProblem> tsp(new TravellingSalesmanProblem(rawNodes.size(), rawNodes, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT));
+int main(int argc, char *argv[]) {
+    // std::vector<std::pair<int, int>> rawNodes = reader::readTSPInstance("/home/willian/Gitkraken/heurisko/examples/instances/tsp/eil51.tsp");
+    std::vector<std::pair<int, int>> rawNodes = reader::readTSPInstance("E:/Users/main/Documents/GitHub/heurisko/examples/instances/tsp/eil51.tsp");
+    std::shared_ptr<TravellingSalesmanProblem> tsp = make_shared<TravellingSalesmanProblem>(rawNodes.size(), rawNodes, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
 
     /*testWithSingleSolution(rawNodes.size(), tsp);
-    exit(0); */
+    exit(0);*/
     DifferentialEvolution<encoding> de(8, 0.005, 0.25, tsp);
     de.setRunningTime(300);
     de.solve();

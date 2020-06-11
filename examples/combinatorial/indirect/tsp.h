@@ -12,15 +12,13 @@
 
 typedef double encoding;
 
-namespace tsp
-{ // TSP problem related structures
+namespace tsp { // TSP problem related structures
 struct Vector2 {
     int id;
     float x;
     float y;
 
-    Vector2(int id, double x, double y)
-    {
+    Vector2(int id, double x, double y) {
         this->id = id;
         this->x = x;
         this->y = y;
@@ -32,15 +30,13 @@ std::vector<std::vector<int>> distanceMatrix;
 
 double euclideanDistance(std::shared_ptr<Vector2> node1, std::shared_ptr<Vector2> node2) { return sqrt(pow(node2->x - node1->x, 2) + pow(node2->y - node1->y, 2)); }
 
-void createNodes(const std::vector<std::pair<int, int>> rawNodes)
-{
+void createNodes(const std::vector<std::pair<int, int>> rawNodes) {
     nodes = std::vector<std::shared_ptr<Vector2>>(rawNodes.size());
     for (size_t i = 0; i < rawNodes.size(); i++)
-        nodes[i] = std::shared_ptr<Vector2>(new Vector2(i, rawNodes[i].first, rawNodes[i].second));
+        nodes[i] = std::make_shared<Vector2>(i, rawNodes[i].first, rawNodes[i].second);
 }
 
-void calculateDistances()
-{
+void calculateDistances() {
     distanceMatrix = std::vector<std::vector<int>>(nodes.size());
     for (size_t i = 0; i < nodes.size(); i++)
         distanceMatrix[i] = std::vector<int>(nodes.size());
@@ -56,11 +52,9 @@ void calculateDistances()
 }
 } // namespace tsp
 
-class TSPSolution : public Solution<encoding>
-{
-public:
-    TSPSolution(int dimension, std::vector<encoding> &decVar) : Solution(decVar)
-    {
+class TSPSolution : public Solution<encoding> {
+    public:
+    TSPSolution(int dimension, std::vector<encoding> &decVar) : Solution(decVar) {
         this->dimension = dimension;
         this->fitness = 0;
         this->createPermutation(decVar);
@@ -69,8 +63,7 @@ public:
 
     // 2-opt Swap mechanism
     // Reverse the direction of the path between indexes start and end
-    void twoOptSwap(std::vector<int> &permutation, const int start, const int end, std::vector<int> &newPermutation)
-    {
+    void twoOptSwap(std::vector<int> &permutation, const int start, const int end, std::vector<int> &newPermutation) {
         for (int i = 0; i < start; i++)
             newPermutation[i] = permutation[i];
         int counter = start;
@@ -83,17 +76,13 @@ public:
     }
 
     // This 2-opt neighborhood function
-    void localSearch() override
-    {
+    void localSearch() override {
         // Stores the best solution in the neighborhood
         std::shared_ptr<TSPSolution> bestNeighbor = NULL;
         while (true) {
-            std::cout << "current fitness " << fitness << std::endl;
             // Check every neighbor solution obtaining by swapping elements of the permutation
             for (size_t i = 0; i < dimension - 1; i++) {
                 for (size_t j = i + 1; j < dimension; j++) {
-                    std::cout << i << "," << j << std::endl;
-
                     // Define Neighbor solution by inverting the path between two points
                     std::vector<int> newPermutation(permutation.size());
                     twoOptSwap(permutation, i, j, newPermutation);
@@ -107,10 +96,13 @@ public:
                         acc += share;
                     }
                     // Construct neighbor solution
-                    std::shared_ptr<TSPSolution> neighbor(new TSPSolution(this->dimension, newDecisionVariables));
+                    std::shared_ptr<TSPSolution> neighbor = std::make_shared<TSPSolution>(this->dimension, newDecisionVariables);
                     // Check if the current neighbor is the best neighbor
-                    if (bestNeighbor == NULL || bestNeighbor->fitness > neighbor->fitness)
+                    if (bestNeighbor == NULL || bestNeighbor->fitness > neighbor->fitness) {
                         bestNeighbor = neighbor;
+                        if (bestNeighbor->fitness < this->fitness) // Stops when the first improving neighbor is found
+                            break;
+                    }
                 }
             }
 
@@ -126,8 +118,7 @@ public:
     }
 
     // This uses a simple swapping neighborhood function
-    void swapLocalSearch()
-    {
+    void swapLocalSearch() {
         // Stores the best solution in the neighborhood
         std::shared_ptr<TSPSolution> bestNeighbor = NULL;
         while (true) {
@@ -149,7 +140,7 @@ public:
                             acc += share;
                         }
                         // Construct neighbor solution
-                        std::shared_ptr<TSPSolution> neighbor(new TSPSolution(this->dimension, newDecisionVariables));
+                        std::shared_ptr<TSPSolution> neighbor = std::make_shared<TSPSolution>(this->dimension, newDecisionVariables);
                         // Check if the current neighbor is the best neighbor
                         if (bestNeighbor == NULL || bestNeighbor->fitness > neighbor->fitness)
                             bestNeighbor = neighbor;
@@ -168,8 +159,7 @@ public:
         }
     }
 
-    void print() override
-    {
+    void print() override {
         std::cout << "Path: { ";
         for (size_t i = 0; i < dimension; i++) {
             int index = permutation[i];
@@ -182,20 +172,17 @@ public:
 
     std::vector<int> getPermutation() const { return permutation; }
 
-protected:
+    protected:
     int dimension;
     std::vector<int> permutation; // stores the permutation of the nodes, i.e., the order in which the nodes are visited
 
-    void createPermutation(const std::vector<encoding> &decisionVariables)
-    {
+    void createPermutation(const std::vector<encoding> &decisionVariables) {
         permutation = std::vector<int>(dimension);
         std::iota(permutation.begin(), permutation.end(), 0);
-        std::sort(permutation.begin(), permutation.end(),
-              [&](int pos1, int pos2) { return std::tie(decisionVariables[pos1], pos1) < std::tie(decisionVariables[pos2], pos2); });
+        std::sort(permutation.begin(), permutation.end(), [&](int pos1, int pos2) { return std::tie(decisionVariables[pos1], pos1) < std::tie(decisionVariables[pos2], pos2); });
     }
 
-    void calculateFitness()
-    {
+    void calculateFitness() {
         this->fitness = 0;
         // Sum of the edges' weight of the path
         for (size_t i = 0; i < dimension - 1; i++) {
@@ -211,15 +198,17 @@ protected:
     }
 };
 
-class TravellingSalesmanProblem : public Problem<encoding>
-{
-public:
-    TravellingSalesmanProblem(int dimension, const std::vector<std::pair<int, int>> rawNodes, OptimizationStrategy strategy, RepresentationType repType)
-        : Problem(strategy, repType)
-    {
+class TravellingSalesmanProblem : public Problem<encoding> {
+    public:
+    TravellingSalesmanProblem(int dimension, const std::vector<std::pair<int, int>> rawNodes, OptimizationStrategy strategy, RepresentationType repType) : Problem(strategy, repType) {
+        if (dimension == 0) {
+            std::cerr << "Zero nodes were given as input\n";
+            exit(1);
+        }
+
+        this->dimension = dimension;
         this->lb = std::vector<encoding>(dimension);
         this->ub = std::vector<encoding>(dimension);
-        this->dimension = dimension;
 
         for (size_t i = 0; i < this->dimension; i++) {
             lb[i] = 0;
@@ -230,9 +219,8 @@ public:
         tsp::calculateDistances();
     }
 
-    std::shared_ptr<Solution<double>> construct(std::vector<encoding> &decisionVariables) override
-    {
-        std::shared_ptr<TSPSolution> solution(new TSPSolution(this->dimension, decisionVariables));
+    std::shared_ptr<Solution<double>> construct(std::vector<encoding> &decisionVariables) override {
+        std::shared_ptr<TSPSolution> solution = std::make_shared<TSPSolution>(this->dimension, decisionVariables);
         // solution->localSearch();
         numbTriedSolution++;
         return solution;

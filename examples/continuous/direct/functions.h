@@ -3,7 +3,6 @@
 
 #include "../../../entities/problem.h"
 #include "math.h"
-using namespace std;
 
 /*class BoothFunction : public Problem<double>
 {

@@ -7,46 +7,39 @@
 #include <iostream>
 #include <memory>
 
-using namespace std;
-
-template <class T>
-class DifferentialEvolution : public GlobalSolver<T>
-{
-public:
-    DifferentialEvolution(int numberOfIndividuals, float recombinationRate, float differentialWeight, shared_ptr<Problem<T>> prob)
-        : GlobalSolver<T>(numberOfIndividuals, prob)
-    {
+template <class T> class DifferentialEvolution : public GlobalSolver<T> {
+    public:
+    DifferentialEvolution(int numberOfIndividuals, float recombinationRate, float differentialWeight, std::shared_ptr<Problem<T>> prob) : GlobalSolver<T>(numberOfIndividuals, prob) {
         if (this->numberOfAgents < 4) {
-            cerr << "The number of individuals needs to be equal or higher than 4" << endl;
+            std::cerr << "The number of individuals needs to be equal or higher than 4" << std::endl;
             exit(EXIT_FAILURE);
         }
 
         this->recombinationRate = recombinationRate;
         this->differentialWeight = differentialWeight;
-        puts("DifferentialEvolution instantiated");
+        std::puts("DifferentialEvolution instantiated");
     }
 
-    void solve()
-    {
+    void solve() {
         if (this->maxIterations == 0 && this->runningTime == 0) {
-            cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
-                "define a stopping criteria!"
-                 << endl;
+            std::cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
+                     "define a stopping criteria!"
+                  << std::endl;
             exit(EXIT_FAILURE);
         } else
-            cout << "Starting DifferentialEvolution search procedure" << endl;
+            std::cout << "Starting DifferentialEvolution search procedure" << std::endl;
 
         utils::startTimeCounter();
 
         // Current population
-        cout << this->numberOfAgents << endl;
-        vector<vector<double>> individuals(this->numberOfAgents);
+        std::cout << this->numberOfAgents << std::endl;
+        std::vector<std::vector<double>> individuals(this->numberOfAgents);
         //#pragma omp parallel for
         for (size_t i = 0; i < this->numberOfAgents; i++)
             this->problem->fillRandomDecisionVariables(individuals[i]);
 
         // Stores the objective value of each individual
-        vector<double> individualsFitness(this->numberOfAgents);
+        std::vector<double> individualsFitness(this->numberOfAgents);
 #pragma omp parallel for
         for (int i = 0; i < this->numberOfAgents; i++) {
             switch (this->problem->getRepType()) {
@@ -54,7 +47,7 @@ public:
                 individualsFitness[i] = this->problem->evaluate(individuals[i]);
                 break;
             case RepresentationType::INDIRECT:
-                shared_ptr<Solution<T>> sol = this->problem->construct(individuals[i]);
+                std::shared_ptr<Solution<T>> sol = this->problem->construct(individuals[i]);
                 individualsFitness[i] = sol->getFitness();
                 break;
             }
@@ -63,9 +56,9 @@ public:
         }
 
         // Store the new individuals (new position) after the crossover
-        vector<vector<double>> newIndividuals = individuals;
+        std::vector<std::vector<double>> newIndividuals = individuals;
         // Stores the objective value of each new individual
-        vector<double> newIndividualsFitness = individualsFitness;
+        std::vector<double> newIndividualsFitness = individualsFitness;
 
         int iteration = -1;
         while (iteration++ < this->maxIterations || utils::getCurrentTime() < this->runningTime) {
@@ -88,9 +81,8 @@ public:
                     // this->prob->getFeasibleDecisionVariable(i);
 
                     if (utils::getRandom() < recombinationRate || j == R) {
-                        newIndividuals[i][j] =
-                            max(this->problem->getLb()[j],
-                            min(individuals[a][j] + (differentialWeight * (individuals[b][j] - individuals[c][j])), this->problem->getUb()[j]));
+                        newIndividuals[i][j] = std::max(
+                            this->problem->getLb()[j], std::min(individuals[a][j] + (differentialWeight * (individuals[b][j] - individuals[c][j])), this->problem->getUb()[j]));
                     } else
                         newIndividuals[i][j] = individuals[i][j];
                 }
@@ -111,7 +103,7 @@ public:
                         }
                         break;
                     case RepresentationType::INDIRECT:
-                        shared_ptr<Solution<T>> sol = this->problem->construct(newIndividuals[i]);
+                        std::shared_ptr<Solution<T>> sol = this->problem->construct(newIndividuals[i]);
                         newIndividualsFitness[i] = sol->getFitness();
                         if (newIndividualsFitness[i] <= individualsFitness[i]) {
                             individuals[i] = newIndividuals[i];
@@ -140,22 +132,22 @@ public:
 
         switch (this->problem->getRepType()) {
         case RepresentationType::DIRECT:
-            cout << "Best solution " << this->globalBestFitness << " Running time: " << utils::getCurrentTime() << endl << "Best decision variables: ";
+            std::cout << "Best solution " << this->globalBestFitness << " Running time: " << utils::getCurrentTime() << std::endl << "Best decision variables: ";
             utils::printVector(this->globalBest);
-            cout << "Number of tried solutions " << this->problem->getNumbTriedSolution() << endl;
+            std::cout << "Number of tried solutions " << this->problem->getNumbTriedSolution() << std::endl;
             break;
         case RepresentationType::INDIRECT:
-            std::cout << "Best solution " << this->globalBestFitness << " Running time: " << utils::getCurrentTime() << endl;
+            std::cout << "Best solution " << this->globalBestFitness << " Running time: " << utils::getCurrentTime() << std::endl;
             std::cout << "Best decision variables: ";
             utils::printVector(this->globalBest);
             std::cout << "Best solution: ";
             this->bestSolution->print();
-            cout << "Number of tried solutions " << this->problem->getNumbTriedSolution() << endl;
+            std::cout << "Number of tried solutions " << this->problem->getNumbTriedSolution() << std::endl;
             break;
         }
     }
 
-private:
+    private:
     float recombinationRate;
     float differentialWeight;
 };
