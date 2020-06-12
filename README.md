@@ -11,11 +11,18 @@
       - Simulated Binary Crossover
       - Multiple Point Crossover 
    - Mutation operators
+      - Random mutation
+      - Swap Mutation
       - Polynomial Mutation
       - Uniform Mutation 
 - Particle Swarm Optimization
 - Grey Wolf Optimizer
 - Whale Optimization Algorithm
+### List of implemented single-solution metaheuristics:
+- Iterated local search
+   - Random perturbation
+   - Swap perturbation
+   - 2-opt Perturbation
 
 ### Problems addressed with the framework in the examples folder:
 - Continuous optimization, non-convex functions
