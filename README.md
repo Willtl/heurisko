@@ -19,6 +19,7 @@
 - Grey Wolf Optimizer
 - Whale Optimization Algorithm
 ### List of implemented single-solution metaheuristics:
+Note that the <u>localSearch</u> function must have been overridden in the solution class.
 - Iterated local search
    - Random perturbation
    - Swap perturbation
