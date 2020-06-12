@@ -20,17 +20,17 @@ std::vector<std::string> split(const std::string &str, char delim) {
     return strings;
 }
 
-std::vector<std::pair<int, int>> readTSPInstance(std::string path) {
+std::vector<std::pair<double, double>> readTSPInstance(std::string path) {
     std::ifstream file(path);
     std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     std::vector<std::string> lines = split(content, '\n');
 
-    std::vector<std::pair<int, int>> nodes;
+    std::vector<std::pair<double, double>> nodes;
     for (auto line : lines) {
         std::vector<std::string> values = split(line, ' ');
-        int x = std::stoi(values[1]);
-        int y = std::stoi(values[2]);
-        std::pair<int, int> coordinate = std::make_pair(x, y);
+        double x = std::stod(values[1]);
+        double y = std::stod(values[2]);
+        std::pair<double, double> coordinate = std::make_pair(x, y);
         nodes.push_back(coordinate);
     }
     return nodes;
