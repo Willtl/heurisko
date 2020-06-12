@@ -5,10 +5,15 @@ CONFIG -= app_bundle
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
-QMAKE_CXXFLAGS -= -O1
-QMAKE_CXXFLAGS -= -O2
-QMAKE_CXXFLAGS += -O3 -fopenmp -pthread
-QMAKE_LFLAGS += -fopenmp
+# The flags below must be activated if you are using GCC compiler
+#QMAKE_CXXFLAGS -= -O1
+#QMAKE_CXXFLAGS -= -O2
+#QMAKE_CXXFLAGS += -O3 -fopenmp -pthread
+#QMAKE_LFLAGS += -fopenmp
+
+# The flags below must be activated if you are using MSVC compiler
+QMAKE_CXXFLAGS += /O2 /openmp
+QMAKE_LFLAGS += /openmp
 
 SOURCES += main.cpp
  

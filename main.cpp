@@ -17,8 +17,7 @@
 #include "util/tspreader.h"
 #include "util/util.h"
 
-void testWithSingleSolution(int dimension, std::shared_ptr<TravellingSalesmanProblem> tsp)
-{
+void testWithSingleSolution(int dimension, std::shared_ptr<TravellingSalesmanProblem> tsp) {
     // Create random solution for debugging
     /*std::vector<double> decisionVariables(dimension);
     tsp->fillRandomDecisionVariables(decisionVariables);
@@ -33,20 +32,21 @@ void testWithSingleSolution(int dimension, std::shared_ptr<TravellingSalesmanPro
     std::cout << "Fitness: " << solution->getFitness() << "\n";*/
 }
 
-int main(int argc, char *argv[])
-{
-    std::vector<std::pair<double, double>> rawNodes = reader::readTSPInstance("/home/willian/Gitkraken/heurisko/examples/instances/tsp/eil76.tsp");
-    // std::vector<std::pair<double, double>> rawNodes = reader::readTSPInstance("E:/Users/main/Documents/GitHub/heurisko/examples/instances/tsp/eil51.tsp");
-    std::shared_ptr<TravellingSalesmanProblem> tsp =
-        make_shared<TravellingSalesmanProblem>(rawNodes.size(), rawNodes, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
+int main(int argc, char *argv[]) {
+    // const std::vector<std::pair<double, double>> rawNodes = reader::readTSPInstance("/home/willian/Gitkraken/heurisko/examples/instances/tsp/eil76.tsp");
+    const std::vector<std::pair<double, double>> rawNodes = reader::readTSPInstance("E:/Users/main/Documents/GitHub/heurisko/examples/instances/tsp/eil76.tsp");
+    const std::shared_ptr<TravellingSalesmanProblem> tsp = make_shared<TravellingSalesmanProblem>(rawNodes.size(), rawNodes, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
+    const int numberOfIndividuals = 8;
+    const float crossoverRate = 0.0; // 1.0 / tsp->getDimension();
+    const float differentialWeight = 0.5;
+    const double localSearchAfterTime = 0.0; // how much time the solver must wait for no improvement to start using local search
+    DifferentialEvolution<encoding> de(numberOfIndividuals, crossoverRate, differentialWeight, tsp, localSearchAfterTime);
+    de.setRunningTime(600);
+    de.solve();
 
-    IteratedLocalSearch<encoding> ils(8, 1, tsp);
+    /*IteratedLocalSearch<encoding> ils(8, 1, tsp);
     ils.setRunningTime(60);
-    ils.solve();
-
-    /*DifferentialEvolution<encoding> de(8, 0.0, 0.5, tsp, 0);
-    de.setRunningTime(60);
-    de.solve();*/
+    ils.solve();*/
 
     /*GeneticAlgorithm<double> ga(8, 1.0, 1.0 / tsp->getDimension(), CrossoverType::UNIFORM, SelectionType::TOURNAMENT, MutationType::RANDOM_MUTATION, tsp);
     ga.setRunningTime(60);

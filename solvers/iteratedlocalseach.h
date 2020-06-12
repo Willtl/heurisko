@@ -71,7 +71,7 @@ public:
         std::cout << this->numberOfAgents << std::endl;
         std::vector<std::vector<double>> solutions(this->numberOfAgents);
 #pragma omp parallel for
-        for (size_t i = 0; i < this->numberOfAgents; i++)
+        for (int i = 0; i < this->numberOfAgents; i++)
             this->problem->fillRandomDecisionVariables(solutions[i]);
 
         // Stores the objective value of each individual
