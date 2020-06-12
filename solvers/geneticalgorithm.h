@@ -118,6 +118,11 @@ public:
                     newIndividuals1Fitness[i] = sol1->getFitness();
                     std::shared_ptr<Solution<T>> sol2 = this->problem->construct(newIndividuals2[i]);
                     newIndividuals2Fitness[i] = sol2->getFitness();
+
+                    if(utils::getCurrentTime() > 30) {
+                        sol1->localSearch();
+                        sol2->localSearch();
+                    }
                     break;
                 }
 #pragma omp critical

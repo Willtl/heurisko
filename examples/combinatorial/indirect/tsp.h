@@ -14,26 +14,18 @@ typedef double encoding;
 
 namespace tsp
 { // TSP problem related structures
-std::vector<std::pair<int, int>> rawNodes;
+std::vector<std::pair<double, double>> rawNodes;
 std::vector<std::vector<double>> distanceMatrix;
 
-double euclideanDistance(int x1, int y1, int x2, int y2) { return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2)); }
+double euclideanDistance(double x1, double y1, double x2, double y2) { return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2)); }
 
-void calculateDistances(std::vector<std::pair<int, int>> rawNodes, int dimension)
+void calculateDistances(std::vector<std::pair<double, double>> rawNodes, int dimension)
 {
-    rawNodes = rawNodes;
-    distanceMatrix = std::vector<std::vector<double>>(dimension);
-    for (size_t i = 0; i < dimension; i++)
-        distanceMatrix[i] = std::vector<double>(dimension);
-
+    tsp::rawNodes = rawNodes;
+    distanceMatrix = std::vector<std::vector<double>>(dimension, std::vector<double>(dimension, 0));
     for (size_t i = 0; i < dimension; i++)
         for (size_t j = 0; j < dimension; j++)
-            if (i == j)
-                distanceMatrix[i][j] = 0;
-            else {
-                double distance = euclideanDistance(rawNodes[i].first, rawNodes[i].second, rawNodes[j].first, rawNodes[j].second);
-                distanceMatrix[i][j] = distance;
-            }
+            distanceMatrix[i][j] = round(euclideanDistance(rawNodes[i].first, rawNodes[i].second, rawNodes[j].first, rawNodes[j].second));
 }
 
 // Encodes permutation into continuous domain
@@ -120,9 +112,9 @@ public:
         for (size_t i = 0; i < dimension; i++) {
             int index = permutation[i];
             if (i + 1 < dimension)
-                std::cout << index << "->";
+                std::cout << index + 1 << "->";
             else
-                std::cout << index << "\n";
+                std::cout << index + 1 << "\n";
         }
     }
 
@@ -151,14 +143,16 @@ protected:
         }
 
         // Add the weight from the last to the first
-        this->fitness += tsp::distanceMatrix[dimension - 1][0];
+        int index1 = permutation[dimension - 1];
+        int index2 = permutation[0];
+        this->fitness += tsp::distanceMatrix[index1][index2];
     }
 };
 
 class TravellingSalesmanProblem : public Problem<encoding>
 {
 public:
-    TravellingSalesmanProblem(int dimension, const std::vector<std::pair<int, int>> rawNodes, OptimizationStrategy strategy, RepresentationType repType)
+    TravellingSalesmanProblem(int dimension, const std::vector<std::pair<double, double>> rawNodes, OptimizationStrategy strategy, RepresentationType repType)
         : Problem(strategy, repType)
     {
         if (dimension == 0) {
