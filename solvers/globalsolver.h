@@ -5,9 +5,12 @@
 #include <memory>
 #include <vector>
 
-template <class T> class GlobalSolver : public Solver<T> {
-    public:
-    GlobalSolver(int numberOfAgents, std::shared_ptr<Problem<T>> prob) : Solver<T>(prob) {
+template <class T>
+class GlobalSolver : public Solver<T>
+{
+public:
+    GlobalSolver(int numberOfAgents, std::shared_ptr<Problem<T>> prob) : Solver<T>(prob)
+    {
         if (numberOfAgents % 2 != 0)
             numberOfAgents += 1;
 
@@ -26,17 +29,18 @@ template <class T> class GlobalSolver : public Solver<T> {
         puts("Global solver instantiated");
     }
 
-    protected:
+protected:
     int numberOfAgents;
     std::vector<double> globalBest;
     double globalBestFitness;
     std::shared_ptr<Solution<T>> bestSolution;
 
-    bool updateGlobalBest(const std::vector<double> individual, double fitness, bool printUpdate) {
+    bool updateGlobalBest(const std::vector<double> &individual, double fitness, bool printUpdate)
+    {
         switch (this->problem->getStrategy()) {
         case OptimizationStrategy::MINIMIZE:
             if (fitness < globalBestFitness) {
-                globalBest = individual;
+                globalBest = std::vector<double>(individual);
                 globalBestFitness = fitness;
                 if (printUpdate)
                     utils::printValueAndTime(fitness, utils::getCurrentTime());
@@ -45,7 +49,7 @@ template <class T> class GlobalSolver : public Solver<T> {
             break;
         case OptimizationStrategy::MAXIMIZE:
             if (fitness > globalBestFitness) {
-                globalBest = individual;
+                globalBest = std::vector<double>(individual);
                 globalBestFitness = fitness;
                 if (printUpdate)
                     utils::printValueAndTime(fitness, utils::getCurrentTime());
@@ -56,11 +60,12 @@ template <class T> class GlobalSolver : public Solver<T> {
         return false;
     }
 
-    bool updateGlobalBest(const std::vector<double> individual, double fitness, bool printUpdate, std::shared_ptr<Solution<T>> solution) {
+    bool updateGlobalBest(const std::vector<double> &individual, double fitness, bool printUpdate, std::shared_ptr<Solution<T>> solution)
+    {
         switch (this->problem->getStrategy()) {
         case OptimizationStrategy::MINIMIZE:
             if (fitness < globalBestFitness) {
-                globalBest = individual;
+                globalBest = std::vector<double>(individual);
                 globalBestFitness = fitness;
                 bestSolution = solution;
                 if (printUpdate)
@@ -70,7 +75,7 @@ template <class T> class GlobalSolver : public Solver<T> {
             break;
         case OptimizationStrategy::MAXIMIZE:
             if (fitness > globalBestFitness) {
-                globalBest = individual;
+                globalBest = std::vector<double>(individual);
                 globalBestFitness = fitness;
                 bestSolution = solution;
                 if (printUpdate)

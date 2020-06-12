@@ -43,7 +43,16 @@ template <class T> class GreyWolfOptimizer : public GlobalSolver<T> {
         vector<double> wolvesFitness(this->numberOfAgents);
 #pragma omp parallel for
         for (size_t i = 0; i < this->numberOfAgents; i++) {
-            wolvesFitness[i] = this->problem->evaluate(wolves[i]);
+            switch (this->problem->getRepType()) {
+            case RepresentationType::DIRECT:
+                wolvesFitness[i] = this->problem->evaluate(wolves[i]);
+                break;
+            case RepresentationType::INDIRECT:
+                std::shared_ptr<Solution<T>> sol = this->problem->construct(wolves[i]);
+                wolvesFitness[i] = sol->getFitness();
+                break;
+            }
+
 #pragma omp critical
             this->updateGlobalBest(wolves[i], wolvesFitness[i], true);
         }

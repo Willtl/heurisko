@@ -8,14 +8,15 @@
 
 using namespace std;
 
-template <class T> class ParticleSwarmOptimization : public GlobalSolver<T> {
-    public:
-    ParticleSwarmOptimization(int numberOfParticles, double c1, double c2, double wMin,
-                  double wMax, shared_ptr<Problem<T>> prob)
-        : GlobalSolver<T>(numberOfParticles, prob) {
+template <class T>
+class ParticleSwarmOptimization : public GlobalSolver<T>
+{
+public:
+    ParticleSwarmOptimization(int numberOfParticles, double c1, double c2, double wMin, double wMax, double vMax, shared_ptr<Problem<T>> prob)
+        : GlobalSolver<T>(numberOfParticles, prob)
+    {
         if (this->numberOfAgents < 4) {
-            cerr << "The number of particles needs to be equal or higher than 4"
-                 << endl;
+            cerr << "The number of particles needs to be equal or higher than 4" << endl;
             exit(EXIT_FAILURE);
         }
 
@@ -25,13 +26,15 @@ template <class T> class ParticleSwarmOptimization : public GlobalSolver<T> {
         this->wMax = wMax;
         this->vMax = vector<double>(this->problem->getDimension());
         for (size_t i = 0; i < this->problem->getDimension(); i++) {
-            vMax[i] = 0.5 * (this->problem->getUb()[i] - this->problem->getLb()[i]);
+            //            vMax[i] = 0.5 * (this->problem->getUb()[i] - this->problem->getLb()[i]);
+            this->vMax[i] = vMax;
         }
 
         puts("ParticleSwarmOptimiza[tion instantiated");
     }
 
-    void solve() {
+    void solve()
+    {
         if (this->maxIterations == 0 && this->runningTime == 0) {
             cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
                 "define a stopping criteria!"
@@ -53,8 +56,16 @@ template <class T> class ParticleSwarmOptimization : public GlobalSolver<T> {
         // Evaluate particles
         vector<double> particlesFitness(this->numberOfAgents);
         for (size_t i = 0; i < this->numberOfAgents; i++) {
-            this->problem->current = utils::getCurrentTime();
-            particlesFitness[i] = this->problem->evaluate(particles[i]);
+            // this->problem->current = utils::getCurrentTime();
+            switch (this->problem->getRepType()) {
+            case RepresentationType::DIRECT:
+                particlesFitness[i] = this->problem->evaluate(particles[i]);
+                break;
+            case RepresentationType::INDIRECT:
+                std::shared_ptr<Solution<T>> sol = this->problem->construct(particles[i]);
+                particlesFitness[i] = sol->getFitness();
+                break;
+            }
             this->updateGlobalBest(particles[i], particlesFitness[i], true);
         }
 
@@ -63,18 +74,15 @@ template <class T> class ParticleSwarmOptimization : public GlobalSolver<T> {
         vector<double> particlesBestFitness = particlesFitness;
 
         // Velocity of each particle
-        vector<vector<double>> velocities(this->numberOfAgents,
-                          vector<double>(this->problem->getDimension(), 0));
+        vector<vector<double>> velocities(this->numberOfAgents, vector<double>(this->problem->getDimension(), 0));
 
         int iteration = -1;
-        while (iteration++ < this->maxIterations ||
-               utils::getCurrentTime() < this->runningTime) {
+        while (iteration++ < this->maxIterations || utils::getCurrentTime() < this->runningTime) {
             double w;
             if (iteration < this->maxIterations)
                 w = wMax - iteration * ((wMax - wMin) / this->maxIterations);
             else
-                w = wMax -
-                    utils::getCurrentTime() * ((wMax - wMin) / this->runningTime);
+                w = wMax - utils::getCurrentTime() * ((wMax - wMin) / this->runningTime);
 
 #pragma omp parallel for
             for (int i = 0u; i < this->numberOfAgents; i++) {
@@ -82,25 +90,25 @@ template <class T> class ParticleSwarmOptimization : public GlobalSolver<T> {
                     double r1 = utils::getRandom();
                     double r2 = utils::getRandom();
 
-                    const double movTowardsPersonal =
-                        c1 * r1 *
-                        (particlesBestPosition[i][j] - particles[i][j]);
-                    const double movTowardsGlobal =
-                        c2 * r2 * (this->globalBest[j] - particles[i][j]);
-                    velocities[i][j] = std::max(
-                        -vMax[i], std::min(vMax[i], w * velocities[i][j] +
-                                        movTowardsPersonal +
-                                        movTowardsGlobal));
-                    particles[i][j] =
-                        std::max(this->problem->getLb()[j],
-                             std::min(this->problem->getUb()[j],
-                                  particles[i][j] + velocities[i][j]));
+                    const double movTowardsPersonal = c1 * r1 * (particlesBestPosition[i][j] - particles[i][j]);
+                    const double movTowardsGlobal = c2 * r2 * (this->globalBest[j] - particles[i][j]);
+                    velocities[i][j] = std::max(-vMax[i], std::min(vMax[i], w * velocities[i][j] + movTowardsPersonal + movTowardsGlobal));
+                    particles[i][j] = std::max(this->problem->getLb()[j], std::min(this->problem->getUb()[j], particles[i][j] + velocities[i][j]));
                 }
             }
 
 #pragma omp parallel for
             for (size_t i = 0; i < this->numberOfAgents; i++) {
-                particlesFitness[i] = this->problem->evaluate(particles[i]);
+                switch (this->problem->getRepType()) {
+                case RepresentationType::DIRECT:
+                    particlesFitness[i] = this->problem->evaluate(particles[i]);
+                    break;
+                case RepresentationType::INDIRECT:
+                    std::shared_ptr<Solution<T>> sol = this->problem->construct(particles[i]);
+                    particlesFitness[i] = sol->getFitness();
+                    break;
+                }
+
                 if (particlesBestFitness[i] < particlesFitness[i]) {
                     particlesBestPosition[i] = particles[i];
                     particlesBestFitness[i] = particlesFitness[i];
@@ -112,7 +120,7 @@ template <class T> class ParticleSwarmOptimization : public GlobalSolver<T> {
         }
     }
 
-    private:
+private:
     double c1, c2, wMax, wMin;
     vector<double> vMax;
 };
