@@ -41,7 +41,7 @@ template <class T1, class T2> T2 remap(T1 n, T1 start1, T1 stop1, T1 start2, T1 
 }
 
 template <typename T> void printVector(const T &arrayValues) {
-    std::cout.precision(17);
+    std::cout.precision(30);
     std::cout << "[";
     for (size_t i = 0; i < arrayValues.size(); i++) {
         if (i + 1 < arrayValues.size())

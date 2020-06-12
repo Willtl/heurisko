@@ -7,9 +7,13 @@
 #include <iostream>
 #include <memory>
 
-template <class T> class DifferentialEvolution : public GlobalSolver<T> {
-    public:
-    DifferentialEvolution(int numberOfIndividuals, float recombinationRate, float differentialWeight, std::shared_ptr<Problem<T>> prob) : GlobalSolver<T>(numberOfIndividuals, prob) {
+template <class T>
+class DifferentialEvolution : public GlobalSolver<T>
+{
+public:
+    DifferentialEvolution(int numberOfIndividuals, float recombinationRate, float differentialWeight, std::shared_ptr<Problem<T>> prob, double localSearchAfter)
+        : GlobalSolver<T>(numberOfIndividuals, prob)
+    {
         if (this->numberOfAgents < 4) {
             std::cerr << "The number of individuals needs to be equal or higher than 4" << std::endl;
             exit(EXIT_FAILURE);
@@ -17,10 +21,13 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
 
         this->recombinationRate = recombinationRate;
         this->differentialWeight = differentialWeight;
+        this->localSearchAfterTime = localSearchAfter;
+        this->doingLocalSearch = false;
         std::puts("DifferentialEvolution instantiated");
     }
 
-    void solve() {
+    void solve()
+    {
         if (this->maxIterations == 0 && this->runningTime == 0) {
             std::cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
                      "define a stopping criteria!"
@@ -54,7 +61,6 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
 #pragma omp critical
             this->updateGlobalBest(individuals[i], individualsFitness[i], true);
         }
-
         // Store the new individuals (new position) after the crossover
         std::vector<std::vector<double>> newIndividuals = individuals;
         // Stores the objective value of each new individual
@@ -62,6 +68,7 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
 
         int iteration = -1;
         while (iteration++ < this->maxIterations || utils::getCurrentTime() < this->runningTime) {
+
 #pragma omp parallel for
             for (int i = 0; i < this->numberOfAgents; i++) {
                 // Pick 3 different agents
@@ -82,7 +89,8 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
 
                     if (utils::getRandom() < recombinationRate || j == R) {
                         newIndividuals[i][j] = std::max(
-                            this->problem->getLb()[j], std::min(individuals[a][j] + (differentialWeight * (individuals[b][j] - individuals[c][j])), this->problem->getUb()[j]));
+                            this->problem->getLb()[j],
+                            std::min(individuals[a][j] + (differentialWeight * (individuals[b][j] - individuals[c][j])), this->problem->getUb()[j]));
                     } else
                         newIndividuals[i][j] = individuals[i][j];
                 }
@@ -104,12 +112,21 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
                         break;
                     case RepresentationType::INDIRECT:
                         std::shared_ptr<Solution<T>> sol = this->problem->construct(newIndividuals[i]);
+#pragma omp critical
+                        if (doingLocalSearch == false && this->getAmountTimeSinceLastImprovement() > localSearchAfterTime) {
+                            std::cout << "doingLocalSearch = true" << std::endl;
+                            doingLocalSearch = true;
+                        }
+                        if (doingLocalSearch)
+                            sol->localSearch();
+
                         newIndividualsFitness[i] = sol->getFitness();
                         if (newIndividualsFitness[i] <= individualsFitness[i]) {
                             individuals[i] = newIndividuals[i];
                             individualsFitness[i] = newIndividualsFitness[i];
 #pragma omp critical
-                            this->updateGlobalBest(individuals[i], individualsFitness[i], true, sol);
+                            if (this->updateGlobalBest(individuals[i], individualsFitness[i], true, sol)) {
+                            }
                         }
                         break;
                     }
@@ -147,9 +164,11 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
         }
     }
 
-    private:
+private:
     float recombinationRate;
     float differentialWeight;
+    float localSearchAfterTime;
+    bool doingLocalSearch;
 };
 
 #endif // DIFFERENTIALEVOLUTION_H

@@ -33,7 +33,12 @@ protected:
     int numberOfAgents;
     std::vector<double> globalBest;
     double globalBestFitness;
+    double timeLastImprovement;
     std::shared_ptr<Solution<T>> bestSolution;
+
+    double getAmountTimeSinceLastImprovement(){
+        return utils::getCurrentTime() - timeLastImprovement;
+    }
 
     bool updateGlobalBest(const std::vector<double> &individual, double fitness, bool printUpdate)
     {
@@ -42,6 +47,7 @@ protected:
             if (fitness < globalBestFitness) {
                 globalBest = std::vector<double>(individual);
                 globalBestFitness = fitness;
+                timeLastImprovement = utils::getCurrentTime();
                 if (printUpdate)
                     utils::printValueAndTime(fitness, utils::getCurrentTime());
                 return true;
@@ -51,6 +57,7 @@ protected:
             if (fitness > globalBestFitness) {
                 globalBest = std::vector<double>(individual);
                 globalBestFitness = fitness;
+                timeLastImprovement = utils::getCurrentTime();
                 if (printUpdate)
                     utils::printValueAndTime(fitness, utils::getCurrentTime());
                 return true;
@@ -67,6 +74,7 @@ protected:
             if (fitness < globalBestFitness) {
                 globalBest = std::vector<double>(individual);
                 globalBestFitness = fitness;
+                timeLastImprovement = utils::getCurrentTime();
                 bestSolution = solution;
                 if (printUpdate)
                     utils::printValueAndTime(fitness, utils::getCurrentTime());
@@ -77,6 +85,7 @@ protected:
             if (fitness > globalBestFitness) {
                 globalBest = std::vector<double>(individual);
                 globalBestFitness = fitness;
+                timeLastImprovement = utils::getCurrentTime();
                 bestSolution = solution;
                 if (printUpdate)
                     utils::printValueAndTime(fitness, utils::getCurrentTime());
