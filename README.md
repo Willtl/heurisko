@@ -1,5 +1,5 @@
 # Heurisko - A C++ open source parallel metaheuristic framework for continuous and combinatorial optimization
-
+The project uses qmake. The qmake generates platform dependent makefiles.
 ### List of implemented population-based metaheuristics:
 - Differential Evolution
    - Mutation scheme variants:
