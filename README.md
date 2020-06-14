@@ -1,5 +1,5 @@
 # Heurisko - A C++ open-source parallel metaheuristic framework for continuous and combinatorial optimization
-The project uses qmake which, simmilarly to cmake, is responsible to generates platform dependent makefiles. However, the project can be easilly adapted to other control the software compilation process like cmake, and other IDEs.
+The project uses qmake, which, similarly to cmake, is responsible for generates platform-dependent makefiles. However, the project can be easily adapted to other control the software compilation process like cmake, and other IDEs.
 ### List of implemented population-based metaheuristics:
 - Differential Evolution
    - Mutation scheme variants:
@@ -23,13 +23,13 @@ Note that the methods below require that the `void localSearch()` function had b
 - Iterated local search
    - Random perturbation
    - Swap perturbation
-   - 2-opt Perturbation
+   - 2-opt perturbation
 
 ### Problems addressed with the framework in the examples folder:
 - Continuous optimization, non-convex functions
    - Rastrigin
    - Ackley
 - Combinatorial optimization
-   - Travelling salesman problem
+   - Traveling  salesman problem
       - 2-opt-based local search
       - swap-based local search
