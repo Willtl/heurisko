@@ -7,32 +7,30 @@
 #include <iostream>
 #include <memory>
 
-template <class T>
-class IteratedLocalSearch : public GlobalSolver<T>
-{
-public:
-    IteratedLocalSearch(int numberOfSolutions, int perturbationStrength, std::shared_ptr<Problem<T>> prob) : GlobalSolver<T>(numberOfSolutions, prob)
-    {
+template <class T> class IteratedLocalSearch : public GlobalSolver<T> {
+    public:
+    IteratedLocalSearch(int numberOfSolutions, int perturbationStrength, std::shared_ptr<Problem<T>> prob) : GlobalSolver<T>(numberOfSolutions, prob) {
         this->perturbationStrength = perturbationStrength;
         this->numberOfAgents = 8; // numb of threads
+        if (this->problem->getRepType() == RepresentationType::DIRECT) {
+            std::cerr << "This method can not work with direct representations." << std::endl;
+            exit(EXIT_FAILURE);
+        }
         if (this->perturbationStrength < 1) {
             std::cerr << "The perturbation rate must be higher than one" << std::endl;
             exit(EXIT_FAILURE);
         }
-
         std::puts("IteratedLocalSearch instantiated");
     }
 
-    void perturbate(std::vector<T> &decisionVariables)
-    {
+    void perturbate(std::vector<T> &decisionVariables) {
         for (size_t i = 0; i < perturbationStrength; i++) {
             int index = utils::getRandom(this->problem->getDimension() - 1);
             decisionVariables[index] = this->problem->getRandomDecisionVariableAt(index);
         }
     }
 
-    void perturbateSwap(std::vector<T> &decisionVariables)
-    {
+    void perturbateSwap(std::vector<T> &decisionVariables) {
         for (size_t i = 0; i < perturbationStrength; i++) {
             int index1 = utils::getRandom(this->problem->getDimension() - 1);
             int index2 = utils::getRandom(this->problem->getDimension() - 1);
@@ -40,8 +38,7 @@ public:
         }
     }
 
-    void perturbateTwoOpt(std::vector<T> &decisionVariables)
-    {
+    void perturbateTwoOpt(std::vector<T> &decisionVariables) {
         int start = utils::getRandom(this->problem->getDimension() - 2);
         int end = start + utils::getRandom((this->problem->getDimension() - start) - 1);
         for (int i = 0; i < start; i++)
@@ -55,8 +52,7 @@ public:
             decisionVariables[i] = this->globalBest[i];
     }
 
-    void solve()
-    {
+    void solve() {
         if (this->maxIterations == 0 && this->runningTime == 0) {
             std::cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
                      "define a stopping criteria!"
@@ -78,47 +74,31 @@ public:
         std::vector<double> solutionsFitness(this->numberOfAgents);
 #pragma omp parallel for
         for (int i = 0; i < this->numberOfAgents; i++) {
-            switch (this->problem->getRepType()) {
-            case RepresentationType::DIRECT:
-                solutionsFitness[i] = this->problem->evaluate(solutions[i]);
-                break;
-            case RepresentationType::INDIRECT:
-                std::shared_ptr<Solution<T>> sol = this->problem->construct(solutions[i]);
-                solutionsFitness[i] = sol->getFitness();
-                break;
-            }
+            std::shared_ptr<Solution<T>> sol = this->problem->construct(solutions[i]);
+            solutionsFitness[i] = sol->getFitness();
 #pragma omp critical
             this->updateGlobalBest(solutions[i], solutionsFitness[i], true);
         }
 
         int iteration = -1;
         while (iteration++ < this->maxIterations || utils::getCurrentTime() < this->runningTime) {
-
 #pragma omp parallel for
             for (int i = 0; i < this->numberOfAgents; i++) {
                 solutions[i] = std::vector<T>(this->globalBest);
-                if (utils::getRandom() <= 0.5)
-                    perturbateTwoOpt(solutions[i]);
-                else
-                    perturbate(solutions[i]);
+                /*if (utils::getRandom() <= 0.5)
+                perturbateTwoOpt(solutions[i]);
+                else*/
+                perturbate(solutions[i]);
             }
 
             switch (this->problem->getStrategy()) {
             case OptimizationStrategy::MINIMIZE:
 #pragma omp parallel for
                 for (int i = 0; i < this->numberOfAgents; i++) {
-                    switch (this->problem->getRepType()) {
-                    case RepresentationType::DIRECT:
-                        solutionsFitness[i] = this->problem->evaluate(solutions[i]);
-                        this->updateGlobalBest(solutions[i], solutionsFitness[i], true);
-                        break;
-                    case RepresentationType::INDIRECT:
-                        std::shared_ptr<Solution<T>> sol = this->problem->construct(solutions[i]);
-                        sol->localSearch();
-                        solutionsFitness[i] = sol->getFitness();
-                        this->updateGlobalBest(solutions[i], solutionsFitness[i], true, sol);
-                        break;
-                    }
+                    std::shared_ptr<Solution<T>> sol = this->problem->construct(solutions[i]);
+                    sol->localSearch();
+                    solutionsFitness[i] = sol->getFitness();
+                    this->updateGlobalBest(solutions[i], solutionsFitness[i], true, sol);
                 }
                 break;
             case OptimizationStrategy::MAXIMIZE:
@@ -127,24 +107,15 @@ public:
             }
         }
 
-        switch (this->problem->getRepType()) {
-        case RepresentationType::DIRECT:
-            std::cout << "Best solution " << this->globalBestFitness << " Running time: " << utils::getCurrentTime() << std::endl << "Best decision variables: ";
-            utils::printVector(this->globalBest);
-            std::cout << "Number of tried solutions " << this->problem->getNumbTriedSolution() << std::endl;
-            break;
-        case RepresentationType::INDIRECT:
-            std::cout << "Best solution " << this->globalBestFitness << " Running time: " << utils::getCurrentTime() << std::endl;
-            std::cout << "Best decision variables: ";
-            utils::printVector(this->globalBest);
-            std::cout << "Best solution: ";
-            this->bestSolution->print();
-            std::cout << "Number of tried solutions " << this->problem->getNumbTriedSolution() << std::endl;
-            break;
-        }
+        std::cout << "Best solution " << this->globalBestFitness << " Running time: " << utils::getCurrentTime() << std::endl;
+        std::cout << "Best decision variables: ";
+        utils::printVector(this->globalBest);
+        std::cout << "Best solution: ";
+        this->bestSolution->print();
+        std::cout << "Number of tried solutions " << this->problem->getNumbTriedSolution() << std::endl;
     }
 
-private:
+    private:
     int perturbationStrength;
 };
 

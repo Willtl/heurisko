@@ -17,11 +17,6 @@ class RastriginSolution : public Solution<encoding> {
         this->fitness = A * dimension + sum;
     }
 
-    void localSearch() override {
-        for (size_t i = 0; i < dimension; i++)
-            this->decisionVariables[i] = 0;
-    }
-
     protected:
     int dimension;
 };
