@@ -22,8 +22,8 @@ void travellingSalesmanProblemExample();
 void continuousOptimizationProblemExample();
 
 int main(int argc, char *argv[]) {
-    travellingSalesmanProblemExample();
-    // continuousOptimizationProblemExample();
+    // travellingSalesmanProblemExample();
+    continuousOptimizationProblemExample();
     exit(EXIT_SUCCESS);
 }
 
@@ -33,6 +33,13 @@ void travellingSalesmanProblemExample() {
     const std::vector<std::pair<double, double>> rawNodes = reader::readTspInstance(reader::TspInstance::A280);
     const std::shared_ptr<TravellingSalesmanProblem> tsp = make_shared<TravellingSalesmanProblem>(rawNodes.size(), rawNodes, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
 
+    // Note that DE (see below) achieved better performance when compared to the ILS
+    const int numbSolutions = 8; // number of solutions per iteration, it turns out that it is good to keep 1 solution per core
+    const int perturbationStrength = 1;
+    IteratedLocalSearch<encoding> ils(numbSolutions, perturbationStrength, tsp);
+    ils.setRunningTime(60);
+    ils.solve();
+
     /*const int numbIndividuals = 8;
     const float crossoverRate = 0.0; // Seems like that for high-dimensional problems, 0.0 leads to better performance
     const float differentialWeight = 0.5;
@@ -40,12 +47,6 @@ void travellingSalesmanProblemExample() {
     DifferentialEvolution<encoding> de(numbIndividuals, crossoverRate, differentialWeight, tsp, localSearchAfterTime);
     de.setRunningTime(runningTime);
     de.solve();*/
-
-    const int numbSolutions = 8; // number of solutions per iteration, it turns out that it is good to keep 1 solution per core
-    const int perturbationStrength = 1;
-    IteratedLocalSearch<encoding> ils(numbSolutions, perturbationStrength, tsp);
-    ils.setRunningTime(60);
-    ils.solve();
 }
 
 // Example using Differential Evolution to solve the Rastrigin function
