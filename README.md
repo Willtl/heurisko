@@ -18,6 +18,9 @@ The project uses qmake, which, similarly to cmake, is responsible for generates 
 - Particle Swarm Optimization
 - Grey Wolf Optimizer
 - Whale Optimization Algorithm
+#### The following strategies are associated with each populatiob-based metaheuristics:
+- Opposition-based learning
+
 ### List of implemented single-solution metaheuristics:
 Note that the methods below require that the `void localSearch()` function had been overridden in the solution class.
 - Iterated local search
