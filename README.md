@@ -1,5 +1,5 @@
 # Heurisko - C++ open-source parallel software for continuous and combinatorial optimization with metaheuristics
-The project uses qmake, which, similarly to cmake, is responsible for generates platform-dependent makefiles. However, the project can be easily adapted to other control the software compilation process like cmake, and other IDEs.
+The project uses qmake, which, similarly to cmake, is responsible for generating platform-dependent makefiles. However, the project can be easily adapted to other control the software compilation process like cmake, and other IDEs. Note that Qt library <b>is not</b> a dependency.
 ### List of implemented population-based metaheuristics:
 - Differential Evolution
    - Mutation scheme variants:
@@ -18,6 +18,9 @@ The project uses qmake, which, similarly to cmake, is responsible for generates 
 - Particle Swarm Optimization
 - Grey Wolf Optimizer
 - Whale Optimization Algorithm
+#### The following strategies are associated with each populatiob-based metaheuristics:
+- Opposition-based learning
+
 ### List of implemented single-solution metaheuristics:
 Note that the methods below require that the `void localSearch()` function had been overridden in the solution class.
 - Iterated local search
