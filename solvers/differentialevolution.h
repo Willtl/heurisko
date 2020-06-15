@@ -159,7 +159,7 @@ public:
             utils::printVector(this->globalBest);
             std::cout << "Best solution: ";
             this->bestSolution->print();
-            std::cout << "Number of tried solutions " << this->problem->getNumbTriedSolution() << std::endl;
+            std::cout << "Number of computed solutions " << this->problem->getNumbTriedSolution() << std::endl;
             break;
         }
     }
