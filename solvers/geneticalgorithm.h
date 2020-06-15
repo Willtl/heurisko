@@ -58,13 +58,13 @@ public:
         // Current population
         std::vector<std::vector<double>> individuals(this->numberOfAgents);
 #pragma omp parallel for
-        for (size_t i = 0; i < this->numberOfAgents; i++)
+        for (int i = 0; i < this->numberOfAgents; i++)
             this->problem->fillRandomDecisionVariables(individuals[i]);
 
         // Stores the objective value of each individual
         std::vector<double> individualsFitness(this->numberOfAgents);
 #pragma omp parallel for
-        for (size_t i = 0; i < this->numberOfAgents; i++) {
+        for (int i = 0; i < this->numberOfAgents; i++) {
             switch (this->problem->getRepType()) {
             case RepresentationType::DIRECT:
                 individualsFitness[i] = this->problem->evaluate(individuals[i]);
@@ -90,7 +90,7 @@ public:
         int iteration = -1;
         while (iteration++ < this->maxIterations || utils::getCurrentTime() < this->runningTime) {
 #pragma omp parallel for
-            for (size_t i = 0; i < this->numberOfAgents; i++) {
+            for (int i = 0; i < this->numberOfAgents; i++) {
                 // Select two individuals
                 int indexParent1, indexParent2;
                 selection(indexParent1, indexParent2, individualsFitness);
@@ -106,7 +106,7 @@ public:
             }
 
 #pragma omp parallel for
-            for (size_t i = 0; i < this->numberOfAgents; i++) {
+            for (int i = 0; i < this->numberOfAgents; i++) {
                 // Evaluate child1
                 switch (this->problem->getRepType()) {
                 case RepresentationType::DIRECT:
@@ -136,7 +136,7 @@ public:
             switch (this->problem->getStrategy()) {
             case OptimizationStrategy::MINIMIZE: {
 #pragma omp parallel for
-                for (size_t i = 0; i < this->numberOfAgents; i++) {
+                for (int i = 0; i < this->numberOfAgents; i++) {
                     if (newIndividuals1Fitness[i] < newIndividuals2Fitness[i] && newIndividuals1Fitness[i] < individualsFitness[i]) {
                         individuals[i] = newIndividuals1[i];
                     } else if (newIndividuals2Fitness[i] < newIndividuals1Fitness[i] && newIndividuals2Fitness[i] < individualsFitness[i]) {
@@ -146,7 +146,7 @@ public:
             } break;
             case OptimizationStrategy::MAXIMIZE: {
 #pragma omp parallel for
-                for (size_t i = 0; i < this->numberOfAgents; i++) {
+                for (int i = 0; i < this->numberOfAgents; i++) {
                     if (newIndividuals1Fitness[i] > newIndividuals2Fitness[i] && newIndividuals1Fitness[i] > individualsFitness[i]) {
                         individuals[i] = newIndividuals1[i];
                     } else if (newIndividuals2Fitness[i] > newIndividuals1Fitness[i] && newIndividuals2Fitness[i] > individualsFitness[i]) {
