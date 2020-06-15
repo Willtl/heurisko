@@ -12,35 +12,7 @@
 
 typedef double encoding;
 
-namespace tsp
-{ // TSP problem related structures
-std::vector<std::pair<double, double>> rawNodes;
 std::vector<std::vector<double>> distanceMatrix;
-
-double euclideanDistance(double x1, double y1, double x2, double y2) { return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2)); }
-
-void calculateDistances(std::vector<std::pair<double, double>> rawNodes, int dimension)
-{
-    tsp::rawNodes = rawNodes;
-    distanceMatrix = std::vector<std::vector<double>>(dimension, std::vector<double>(dimension, 0));
-    for (size_t i = 0; i < dimension; i++)
-        for (size_t j = 0; j < dimension; j++)
-            distanceMatrix[i][j] = round(euclideanDistance(rawNodes[i].first, rawNodes[i].second, rawNodes[j].first, rawNodes[j].second));
-}
-
-// Encodes permutation into continuous domain
-// The lowest the index, the lowest is the continuous value
-void encode(const std::vector<int> &permutation, std::vector<double> &decisionVariables)
-{
-    int dimension = permutation.size();
-    double share = 1.0 / dimension, acc = std::nextafter(0.0, 0.1);
-    for (size_t k = 0; k < dimension; k++) {
-        const int index = permutation[k];
-        decisionVariables[index] = acc;
-        acc += share;
-    }
-}
-} // namespace tsp
 
 class TSPSolution : public Solution<encoding>
 {
@@ -51,6 +23,19 @@ public:
         this->fitness = 0;
         this->createPermutation(decVar);
         this->calculateFitness();
+    }
+
+    // Encodes permutation into continuous domain
+    // The lowest the index, the lowest is the continuous value
+    void encode(const std::vector<int> &permutation, std::vector<double> &decisionVariables)
+    {
+        int dimension = permutation.size();
+        double share = 1.0 / dimension, acc = std::nextafter(0.0, 0.1);
+        for (size_t k = 0; k < dimension; k++) {
+            const int index = permutation[k];
+            decisionVariables[index] = acc;
+            acc += share;
+        }
     }
 
     // 2-opt Swap mechanism
@@ -83,7 +68,7 @@ public:
                     // Define Neighbor solution by inverting the path between two points
                     twoOptSwap(i, j, newPermutation);
                     // Decision variables values of the neighbor solution
-                    tsp::encode(newPermutation, newDecisionVariables);
+                    encode(newPermutation, newDecisionVariables);
                     // Construct neighbor solution
                     std::shared_ptr<TSPSolution> neighbor = std::make_shared<TSPSolution>(this->dimension, newDecisionVariables);
                     // Check if the current neighbor is the best neighbor
@@ -139,20 +124,20 @@ protected:
         for (size_t i = 0; i < dimension - 1; i++) {
             int index1 = permutation[i];
             int index2 = permutation[i + 1];
-            this->fitness += tsp::distanceMatrix[index1][index2];
+            this->fitness += distanceMatrix[index1][index2];
         }
 
         // Add the weight from the last to the first
         int index1 = permutation[dimension - 1];
         int index2 = permutation[0];
-        this->fitness += tsp::distanceMatrix[index1][index2];
+        this->fitness += distanceMatrix[index1][index2];
     }
 };
 
 class TravellingSalesmanProblem : public Problem<encoding>
 {
 public:
-    TravellingSalesmanProblem(int dimension, const std::vector<std::pair<double, double>> rawNodes, OptimizationStrategy strategy, RepresentationType repType)
+    TravellingSalesmanProblem(int dimension, const std::vector<std::vector<double>> distMatrix, OptimizationStrategy strategy, RepresentationType repType)
         : Problem(strategy, repType)
     {
         if (dimension == 0) {
@@ -169,7 +154,7 @@ public:
             ub[i] = nextafter(1.0, 0.0);
         }
 
-        tsp::calculateDistances(rawNodes, dimension);
+        distanceMatrix = distMatrix;
     }
 
     std::shared_ptr<Solution<double>> construct(std::vector<encoding> &decisionVariables) override

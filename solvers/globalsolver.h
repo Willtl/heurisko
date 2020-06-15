@@ -5,12 +5,9 @@
 #include <memory>
 #include <vector>
 
-template <class T>
-class GlobalSolver : public Solver<T>
-{
-public:
-    GlobalSolver(int numberOfAgents, std::shared_ptr<Problem<T>> prob) : Solver<T>(prob)
-    {
+template <class T> class GlobalSolver : public Solver<T> {
+    public:
+    GlobalSolver(int numberOfAgents, std::shared_ptr<Problem<T>> prob) : Solver<T>(prob) {
         if (numberOfAgents % 2 != 0)
             numberOfAgents += 1;
 
@@ -29,19 +26,38 @@ public:
         puts("Global solver instantiated");
     }
 
-protected:
+    virtual void getOppositePoint(const std::vector<T> &variables, std::vector<T> &opposite) {
+#pragma omp critical
+        if (typeid(T) != typeid(double)) {
+            puts("You must override the getOppositePoint in the derived class");
+            exit(EXIT_FAILURE);
+        }
+
+        opposite = std::vector<T>(variables.size());
+        for (size_t i = 0; i < this->problem->getDimension(); i++)
+            opposite[i] = this->getOppositeVariable(i, variables[i]);
+    }
+
+    virtual T getOppositeVariable(const int indexVar, const double currentValue) {
+        if (typeid(T) == typeid(double)) {
+            return this->problem->getLb()[indexVar] + this->problem->getUb()[indexVar] - currentValue;
+        } else {
+            puts("You must override the getOppositeVariable in the derived class");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    protected:
     int numberOfAgents;
     std::vector<double> globalBest;
     double globalBestFitness;
     double timeLastImprovement;
     std::shared_ptr<Solution<T>> bestSolution;
+    bool oppositeLearning;
 
-    double getAmountTimeSinceLastImprovement(){
-        return utils::getCurrentTime() - timeLastImprovement;
-    }
+    double getAmountTimeSinceLastImprovement() { return utils::getCurrentTime() - timeLastImprovement; }
 
-    bool updateGlobalBest(const std::vector<double> &individual, double fitness, bool printUpdate)
-    {
+    bool updateGlobalBest(const std::vector<double> &individual, double fitness, bool printUpdate) {
         switch (this->problem->getStrategy()) {
         case OptimizationStrategy::MINIMIZE:
             if (fitness < globalBestFitness) {
@@ -67,8 +83,7 @@ protected:
         return false;
     }
 
-    bool updateGlobalBest(const std::vector<double> &individual, double fitness, bool printUpdate, std::shared_ptr<Solution<T>> solution)
-    {
+    bool updateGlobalBest(const std::vector<double> &individual, double fitness, bool printUpdate, std::shared_ptr<Solution<T>> solution) {
         switch (this->problem->getStrategy()) {
         case OptimizationStrategy::MINIMIZE:
             if (fitness < globalBestFitness) {

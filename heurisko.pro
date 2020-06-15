@@ -28,6 +28,7 @@ HEADERS += \
     solvers/globalsolver.h \
     solvers/geneticalgorithm.h \
     solvers/greywolfoptimizer.h \
+    solvers/parameters.h \
     solvers/particleswarmoptimization.h \
     solvers/solver.h \
     util/util.h \

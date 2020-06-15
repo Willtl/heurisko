@@ -15,6 +15,7 @@ namespace reader {
 std::string instancesPath;
 enum TspInstance { A280, EIL51, EIL76, XQF131 };
 std::map<TspInstance, std::string> instanceNames = {{TspInstance::A280, "a280.tsp"}, {TspInstance::EIL51, "eil51.tsp"}, {TspInstance::EIL76, "eil76.tsp"}, {TspInstance::XQF131, "xqf131.tsp"}};
+std::vector<std::vector<double>> distanceMatrix;
 
 bool existsFileAtPath(const std::filesystem::path &p, std::filesystem::file_status s = std::filesystem::file_status{}) {
     if (std::filesystem::status_known(s) ? std::filesystem::exists(s) : std::filesystem::exists(p))
@@ -50,7 +51,17 @@ std::vector<std::string> split(const std::string &str, char delim) {
     return strings;
 }
 
-std::vector<std::pair<double, double>> readTspInstance(TspInstance instance) {
+double euclideanDistance(double x1, double y1, double x2, double y2) { return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2)); }
+
+void calculateDistances(const std::vector<std::pair<double, double>> &rawNodes, std::vector<std::vector<double>> &distanceMatrix) {
+    const int dimension = rawNodes.size();
+    distanceMatrix = std::vector<std::vector<double>>(dimension, std::vector<double>(dimension, 0));
+    for (size_t i = 0; i < dimension; i++)
+        for (size_t j = 0; j < dimension; j++)
+            distanceMatrix[i][j] = round(euclideanDistance(rawNodes[i].first, rawNodes[i].second, rawNodes[j].first, rawNodes[j].second));
+}
+
+std::vector<std::vector<double>> readTspInstance(TspInstance instance) {
     // Check if instances folder is placed at correct path
     reader::existsTInstancesFolder();
 
@@ -74,9 +85,11 @@ std::vector<std::pair<double, double>> readTspInstance(TspInstance instance) {
         std::pair<double, double> coordinate = std::make_pair(x, y);
         nodes.push_back(coordinate);
     }
-    return nodes;
-}
 
+    std::vector<std::vector<double>> distanceMatrix;
+    calculateDistances(nodes, distanceMatrix);
+    return distanceMatrix;
+}
 } // namespace reader
 
 #endif // TSPREADER_H

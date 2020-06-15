@@ -4,30 +4,27 @@
 #include "../entities/problem.h"
 #include "../entities/solution.h"
 #include "globalsolver.h"
+#include "parameters.h"
 #include <iostream>
 #include <memory>
 
-template <class T>
-class DifferentialEvolution : public GlobalSolver<T>
-{
-public:
-    DifferentialEvolution(int numberOfIndividuals, float recombinationRate, float differentialWeight, std::shared_ptr<Problem<T>> prob, double localSearchAfter)
-        : GlobalSolver<T>(numberOfIndividuals, prob)
-    {
+template <class T> class DifferentialEvolution : public GlobalSolver<T> {
+    public:
+    DifferentialEvolution(const DifferentialEvolutionParameters &parameters, std::shared_ptr<Problem<T>> prob) : GlobalSolver<T>(parameters.numbIndividuals, prob) {
         if (this->numberOfAgents < 4) {
             std::cerr << "The number of individuals needs to be equal or higher than 4" << std::endl;
             exit(EXIT_FAILURE);
         }
 
-        this->recombinationRate = recombinationRate;
-        this->differentialWeight = differentialWeight;
-        this->localSearchAfterTime = localSearchAfter;
+        this->crossoverRate = parameters.crossoverRate;
+        this->differentialWeight = parameters.differentialWeight;
+        this->localSearchAfterTime = parameters.localSearchAfterTime;
+        this->oppositeLearning = parameters.oppositeLearning;
         this->doingLocalSearch = false;
         std::puts("DifferentialEvolution instantiated");
     }
 
-    void solve()
-    {
+    void solve() {
         if (this->maxIterations == 0 && this->runningTime == 0) {
             std::cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
                      "define a stopping criteria!"
@@ -41,9 +38,17 @@ public:
         // Current population
         std::cout << this->numberOfAgents << std::endl;
         std::vector<std::vector<double>> individuals(this->numberOfAgents);
-        //#pragma omp parallel for
-        for (size_t i = 0; i < this->numberOfAgents; i++)
+        // Randomly initialize population
+#pragma omp parallel for
+        for (int i = 0; i < this->numberOfAgents; i++)
             this->problem->fillRandomDecisionVariables(individuals[i]);
+
+        // Create array of solution for indirect representations
+        std::vector<std::shared_ptr<Solution<T>>> solutions, oppSolutions;
+        if (this->problem->getRepType() == RepresentationType::INDIRECT)
+            solutions = std::vector<std::shared_ptr<Solution<T>>>(this->numberOfAgents);
+        if (this->problem->getRepType() == RepresentationType::INDIRECT && this->oppositeLearning)
+            oppSolutions = std::vector<std::shared_ptr<Solution<T>>>(this->numberOfAgents);
 
         // Stores the objective value of each individual
         std::vector<double> individualsFitness(this->numberOfAgents);
@@ -54,17 +59,26 @@ public:
                 individualsFitness[i] = this->problem->evaluate(individuals[i]);
                 break;
             case RepresentationType::INDIRECT:
-                std::shared_ptr<Solution<T>> sol = this->problem->construct(individuals[i]);
-                individualsFitness[i] = sol->getFitness();
+                solutions[i] = this->problem->construct(individuals[i]);
+                individualsFitness[i] = solutions[i]->getFitness();
                 break;
             }
 #pragma omp critical
             this->updateGlobalBest(individuals[i], individualsFitness[i], true);
         }
-        // Store the new individuals (new position) after the crossover
+        // Stores the new individuals (new position) after the crossover
         std::vector<std::vector<double>> newIndividuals = individuals;
         // Stores the objective value of each new individual
         std::vector<double> newIndividualsFitness = individualsFitness;
+        // Stores the opposite positions in case opposite learning is true
+        std::vector<std::vector<double>> oppPoints;
+        // Stores the objective value of each opposite position
+        std::vector<double> oppFitness;
+        // Initialize opposite vectors
+        if (this->oppositeLearning == true) {
+            oppPoints = individuals;
+            oppFitness = individualsFitness;
+        }
 
         int iteration = -1;
         while (iteration++ < this->maxIterations || utils::getCurrentTime() < this->runningTime) {
@@ -87,10 +101,9 @@ public:
                     // newIndividuals[x][i] =
                     // this->prob->getFeasibleDecisionVariable(i);
 
-                    if (utils::getRandom() < recombinationRate || j == R) {
+                    if (utils::getRandom() < crossoverRate || j == R) {
                         newIndividuals[i][j] = std::max(
-                            this->problem->getLb()[j],
-                            std::min(individuals[a][j] + (differentialWeight * (individuals[b][j] - individuals[c][j])), this->problem->getUb()[j]));
+                            this->problem->getLb()[j], std::min(individuals[a][j] + (differentialWeight * (individuals[b][j] - individuals[c][j])), this->problem->getUb()[j]));
                     } else
                         newIndividuals[i][j] = individuals[i][j];
                 }
@@ -103,6 +116,16 @@ public:
                     switch (this->problem->getRepType()) {
                     case RepresentationType::DIRECT:
                         newIndividualsFitness[i] = this->problem->evaluate(newIndividuals[i]);
+                        if (this->oppositeLearning) {
+                            std::vector<T> oppositePoint;
+                            this->getOppositePoint(newIndividuals[i], oppositePoint);
+                            double oppositeFitness = this->problem->evaluate(oppositePoint);
+                            if (oppositeFitness < newIndividualsFitness[i]) {
+                                newIndividuals[i] = oppositePoint;
+                                newIndividualsFitness[i] = oppositeFitness;
+                            }
+                        }
+
                         if (newIndividualsFitness[i] <= individualsFitness[i]) {
                             individuals[i] = newIndividuals[i];
                             individualsFitness[i] = newIndividualsFitness[i];
@@ -111,22 +134,37 @@ public:
                         }
                         break;
                     case RepresentationType::INDIRECT:
-                        std::shared_ptr<Solution<T>> sol = this->problem->construct(newIndividuals[i]);
+                        // Original solution
+                        solutions[i] = this->problem->construct(newIndividuals[i]);
+                        // Create opposite solution
+                        if (this->oppositeLearning) {
+                            this->getOppositePoint(newIndividuals[i], oppPoints[i]);
+                            oppSolutions[i] = this->problem->construct(oppPoints[i]);
+                        }
 #pragma omp critical
                         if (doingLocalSearch == false && this->getAmountTimeSinceLastImprovement() > localSearchAfterTime) {
                             std::cout << "doingLocalSearch = true" << std::endl;
                             doingLocalSearch = true;
                         }
-                        if (doingLocalSearch)
-                            sol->localSearch();
+                        // Perform local search
+                        if (doingLocalSearch) {
+                            solutions[i]->localSearch();
+                            if (this->oppositeLearning)
+                                oppSolutions[i]->localSearch();
+                        }
+                        // Check if opposite positions leads to better solution and swap
+                        if (this->oppositeLearning && oppSolutions[i]->getFitness() <= solutions[i]->getFitness()) {
+                            newIndividuals[i] = oppPoints[i];
+                            newIndividualsFitness[i] = oppSolutions[i]->getFitness();
+                            solutions[i] = oppSolutions[i];
+                        }
 
-                        newIndividualsFitness[i] = sol->getFitness();
+                        newIndividualsFitness[i] = solutions[i]->getFitness();
                         if (newIndividualsFitness[i] <= individualsFitness[i]) {
                             individuals[i] = newIndividuals[i];
                             individualsFitness[i] = newIndividualsFitness[i];
 #pragma omp critical
-                            if (this->updateGlobalBest(individuals[i], individualsFitness[i], true, sol)) {
-                            }
+                            (this->updateGlobalBest(individuals[i], individualsFitness[i], true, solutions[i]));
                         }
                         break;
                     }
@@ -164,8 +202,8 @@ public:
         }
     }
 
-private:
-    float recombinationRate;
+    private:
+    float crossoverRate;
     float differentialWeight;
     float localSearchAfterTime;
     bool doingLocalSearch;
