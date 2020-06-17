@@ -14,11 +14,9 @@ typedef double encoding;
 
 std::vector<std::vector<double>> distanceMatrix;
 
-class TSPSolution : public Solution<encoding>
-{
-public:
-    TSPSolution(int dimension, std::vector<encoding> &decVar) : Solution(decVar)
-    {
+class TSPSolution : public Solution<encoding> {
+    public:
+    TSPSolution(int dimension, std::vector<encoding> &decVar) : Solution(decVar) {
         this->dimension = dimension;
         this->fitness = 0;
         this->createPermutation(decVar);
@@ -27,8 +25,7 @@ public:
 
     // Encodes permutation into continuous domain
     // The lowest the index, the lowest is the continuous value
-    void encode(const std::vector<int> &permutation, std::vector<double> &decisionVariables)
-    {
+    void encode(const std::vector<int> &permutation, std::vector<double> &decisionVariables) {
         int dimension = permutation.size();
         double share = 1.0 / dimension, acc = std::nextafter(0.0, 0.1);
         for (size_t k = 0; k < dimension; k++) {
@@ -40,8 +37,7 @@ public:
 
     // 2-opt Swap mechanism
     // Reverse the direction of the path between indexes start and end
-    void twoOptSwap(const int start, const int end, std::vector<int> &newPermutation)
-    {
+    void twoOptSwap(const int start, const int end, std::vector<int> &newPermutation) {
         newPermutation = std::vector<int>(dimension);
         for (int i = 0; i < start; i++)
             newPermutation[i] = permutation[i];
@@ -55,8 +51,7 @@ public:
     }
 
     // This 2-opt neighborhood function
-    void localSearch() override
-    {
+    void localSearch() override {
         std::vector<int> newPermutation(dimension);
         std::vector<double> newDecisionVariables(dimension);
         std::vector<double> bestDecisionVariables;
@@ -91,13 +86,12 @@ public:
         }
     }
 
-    void print() override
-    {
-        std::cout << "Path: { ";
+    void print() override {
+        std::cout << "Path: ";
         for (size_t i = 0; i < dimension; i++) {
             int index = permutation[i];
             if (i + 1 < dimension)
-                std::cout << index + 1 << "->";
+                std::cout << index + 1 << ", ";
             else
                 std::cout << index + 1 << "\n";
         }
@@ -105,20 +99,18 @@ public:
 
     std::vector<int> getPermutation() const { return permutation; }
 
-protected:
+    protected:
     int dimension;
     std::vector<int> permutation; // stores the permutation of the nodes, i.e., the order in which the nodes are visited
 
-    void createPermutation(const std::vector<encoding> &decisionVariables)
-    {
+    void createPermutation(const std::vector<encoding> &decisionVariables) {
         permutation = std::vector<int>(dimension);
-        std::iota(permutation.begin(), permutation.end(), 0);
-        std::sort(permutation.begin(), permutation.end(),
-              [&](int pos1, int pos2) { return std::tie(decisionVariables[pos1], pos1) < std::tie(decisionVariables[pos2], pos2); });
+        for (int i = 0; i < dimension; i++)
+            permutation[i] = i;
+        std::sort(permutation.begin(), permutation.end(), [&](int pos1, int pos2) { return std::tie(decisionVariables[pos1], pos1) < std::tie(decisionVariables[pos2], pos2); });
     }
 
-    void calculateFitness()
-    {
+    void calculateFitness() {
         this->fitness = 0;
         // Sum of the edges' weight of the path
         for (size_t i = 0; i < dimension - 1; i++) {
@@ -134,12 +126,9 @@ protected:
     }
 };
 
-class TravellingSalesmanProblem : public Problem<encoding>
-{
-public:
-    TravellingSalesmanProblem(int dimension, const std::vector<std::vector<double>> distMatrix, OptimizationStrategy strategy, RepresentationType repType)
-        : Problem(strategy, repType)
-    {
+class TravellingSalesmanProblem : public Problem<encoding> {
+    public:
+    TravellingSalesmanProblem(int dimension, const std::vector<std::vector<double>> distMatrix, OptimizationStrategy strategy, RepresentationType repType) : Problem(strategy, repType) {
         if (dimension == 0) {
             std::cerr << "Zero nodes were given as input\n";
             exit(1);
@@ -157,8 +146,7 @@ public:
         distanceMatrix = distMatrix;
     }
 
-    std::shared_ptr<Solution<double>> construct(std::vector<encoding> &decisionVariables) override
-    {
+    std::shared_ptr<Solution<double>> construct(std::vector<encoding> &decisionVariables) override {
         std::shared_ptr<TSPSolution> solution = std::make_shared<TSPSolution>(this->dimension, decisionVariables);
         // solution->localSearch();
         numbTriedSolution++;

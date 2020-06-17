@@ -23,7 +23,7 @@ bool existsFileAtPath(const std::filesystem::path &p, std::filesystem::file_stat
     return false;
 }
 
-bool existsTInstancesFolder() {
+bool existsInstancesFolder() {
     std::string currentPath = std::filesystem::current_path().u8string();
     std::filesystem::path instancesPath = std::filesystem::u8path(currentPath + "\\instances\\");
 
@@ -63,7 +63,7 @@ void calculateDistances(const std::vector<std::pair<double, double>> &rawNodes, 
 
 std::vector<std::vector<double>> readTspInstance(TspInstance instance) {
     // Check if instances folder is placed at correct path
-    reader::existsTInstancesFolder();
+    reader::existsInstancesFolder();
 
     // Define instance path
     std::string instanceName = reader::instanceNames[instance];
