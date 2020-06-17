@@ -8,8 +8,10 @@
 enum OptimizationStrategy { MINIMIZE, MAXIMIZE };
 enum RepresentationType { DIRECT, INDIRECT };
 
-template <class T> class Problem {
-    public:
+template <class T>
+class Problem
+{
+public:
     int getDimension() const { return dimension; }
     std::vector<T> getLb() const { return lb; }
     std::vector<T> getUb() const { return ub; }
@@ -19,19 +21,22 @@ template <class T> class Problem {
     RepresentationType getRepType() const { return repType; }
     void setRepType(const RepresentationType &value) { repType = value; }
 
-    virtual double evaluate(const std::vector<T> &decisionVariables) {
+    virtual double evaluate(const std::vector<T> &decisionVariables)
+    {
         std::cerr << "You must override @evaluate in your derived class" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    virtual std::shared_ptr<Solution<T>> construct(std::vector<T> &decisionVariables) {
+    virtual std::shared_ptr<Solution<T>> construct(std::vector<T> &decisionVariables)
+    {
         std::cerr << "You must override @construct in your derived class" << std::endl;
         exit(EXIT_FAILURE);
     }
 
     virtual void localSearch(std::shared_ptr<Solution<T>> &solution) {}
 
-    virtual void fillRandomDecisionVariables(std::vector<T> &variables) {
+    virtual void fillRandomDecisionVariables(std::vector<T> &variables)
+    {
         if (typeid(T) == typeid(double)) {
             variables = std::vector<T>(dimension);
             for (size_t i = 0; i < dimension; i++) {
@@ -44,7 +49,8 @@ template <class T> class Problem {
         }
     }
 
-    virtual T getRandomDecisionVariableAt(int indexVar) {
+    virtual T getRandomDecisionVariableAt(int indexVar)
+    {
         if (typeid(T) == typeid(double)) {
             return lb[indexVar] + utils::getRandom() * (ub[indexVar] - lb[indexVar]);
         } else {
@@ -54,8 +60,10 @@ template <class T> class Problem {
         }
     }
 
-    protected:
-    Problem(OptimizationStrategy strategy, RepresentationType repType) {
+protected:
+    Problem(const int dimension, OptimizationStrategy strategy, RepresentationType repType)
+    {
+        this->dimension = dimension;
         this->numbTriedSolution = 0;
         this->strategy = strategy;
         this->repType = repType;

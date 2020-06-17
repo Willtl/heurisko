@@ -7,9 +7,12 @@
 #include <iostream>
 #include <memory>
 
-template <class T> class IteratedLocalSearch : public GlobalSolver<T> {
-    public:
-    IteratedLocalSearch(int numberOfSolutions, int perturbationStrength, std::shared_ptr<Problem<T>> prob) : GlobalSolver<T>(numberOfSolutions, prob) {
+template <class T>
+class IteratedLocalSearch : public GlobalSolver<T>
+{
+public:
+    IteratedLocalSearch(int numberOfSolutions, int perturbationStrength, std::shared_ptr<Problem<T>> prob) : GlobalSolver<T>(numberOfSolutions, prob)
+    {
         this->perturbationStrength = perturbationStrength;
         this->numberOfAgents = 8; // numb of threads
         if (this->problem->getRepType() == RepresentationType::DIRECT) {
@@ -23,14 +26,16 @@ template <class T> class IteratedLocalSearch : public GlobalSolver<T> {
         std::puts("IteratedLocalSearch instantiated");
     }
 
-    void perturbate(std::vector<T> &decisionVariables) {
+    void perturbate(std::vector<T> &decisionVariables)
+    {
         for (size_t i = 0; i < perturbationStrength; i++) {
             int index = utils::getRandom(this->problem->getDimension() - 1);
             decisionVariables[index] = this->problem->getRandomDecisionVariableAt(index);
         }
     }
 
-    void perturbateSwap(std::vector<T> &decisionVariables) {
+    void perturbateSwap(std::vector<T> &decisionVariables)
+    {
         for (size_t i = 0; i < perturbationStrength; i++) {
             int index1 = utils::getRandom(this->problem->getDimension() - 1);
             int index2 = utils::getRandom(this->problem->getDimension() - 1);
@@ -38,7 +43,8 @@ template <class T> class IteratedLocalSearch : public GlobalSolver<T> {
         }
     }
 
-    void perturbateTwoOpt(std::vector<T> &decisionVariables) {
+    void perturbateTwoOpt(std::vector<T> &decisionVariables)
+    {
         int start = utils::getRandom(this->problem->getDimension() - 2);
         int end = start + utils::getRandom((this->problem->getDimension() - start) - 1);
         for (int i = 0; i < start; i++)
@@ -52,7 +58,8 @@ template <class T> class IteratedLocalSearch : public GlobalSolver<T> {
             decisionVariables[i] = this->globalBest[i];
     }
 
-    void solve() {
+    void solve()
+    {
         if (this->maxIterations == 0 && this->runningTime == 0) {
             std::cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
                      "define a stopping criteria!"
@@ -115,7 +122,7 @@ template <class T> class IteratedLocalSearch : public GlobalSolver<T> {
         std::cout << "Number of tried solutions " << this->problem->getNumbTriedSolution() << std::endl;
     }
 
-    private:
+private:
     int perturbationStrength;
 };
 

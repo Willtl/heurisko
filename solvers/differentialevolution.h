@@ -8,9 +8,12 @@
 #include <iostream>
 #include <memory>
 
-template <class T> class DifferentialEvolution : public GlobalSolver<T> {
-    public:
-    DifferentialEvolution(const DifferentialEvolutionParameters &parameters, std::shared_ptr<Problem<T>> prob) : GlobalSolver<T>(parameters.numbIndividuals, prob) {
+template <class T>
+class DifferentialEvolution : public GlobalSolver<T>
+{
+public:
+    DifferentialEvolution(const DifferentialEvolutionParameters &parameters, std::shared_ptr<Problem<T>> prob) : GlobalSolver<T>(parameters.numbIndividuals, prob)
+    {
         if (this->numberOfAgents < 4) {
             std::cerr << "The number of individuals needs to be equal or higher than 4" << std::endl;
             exit(EXIT_FAILURE);
@@ -24,7 +27,8 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
         std::puts("DifferentialEvolution instantiated");
     }
 
-    void solve() {
+    void solve()
+    {
         if (this->maxIterations == 0 && this->runningTime == 0) {
             std::cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
                      "define a stopping criteria!"
@@ -103,7 +107,8 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
 
                     if (utils::getRandom() < crossoverRate || j == R) {
                         newIndividuals[i][j] = std::max(
-                            this->problem->getLb()[j], std::min(individuals[a][j] + (differentialWeight * (individuals[b][j] - individuals[c][j])), this->problem->getUb()[j]));
+                            this->problem->getLb()[j],
+                            std::min(individuals[a][j] + (differentialWeight * (individuals[b][j] - individuals[c][j])), this->problem->getUb()[j]));
                     } else
                         newIndividuals[i][j] = individuals[i][j];
                 }
@@ -202,7 +207,7 @@ template <class T> class DifferentialEvolution : public GlobalSolver<T> {
         }
     }
 
-    private:
+private:
     float crossoverRate;
     float differentialWeight;
     float localSearchAfterTime;

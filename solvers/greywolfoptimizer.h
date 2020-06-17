@@ -8,20 +8,22 @@
 
 using namespace std;
 
-template <class T> class GreyWolfOptimizer : public GlobalSolver<T> {
-    public:
-    GreyWolfOptimizer(int numberOfAgents, shared_ptr<Problem<T>> prob)
-        : GlobalSolver<T>(numberOfAgents, prob) {
+template <class T>
+class GreyWolfOptimizer : public GlobalSolver<T>
+{
+public:
+    GreyWolfOptimizer(int numberOfAgents, shared_ptr<Problem<T>> prob) : GlobalSolver<T>(numberOfAgents, prob)
+    {
         if (this->numberOfAgents < 3) {
-            cerr << "The number of individuals needs to be equal or higher than 3"
-                 << endl;
+            cerr << "The number of individuals needs to be equal or higher than 3" << endl;
             exit(EXIT_FAILURE);
         }
 
         puts("Grey Wolf Optimizer instantiated");
     }
 
-    void solve() {
+    void solve()
+    {
         if (this->maxIterations == 0 && this->runningTime == 0) {
             cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
                 "define a stopping criteria!"
@@ -61,8 +63,7 @@ template <class T> class GreyWolfOptimizer : public GlobalSolver<T> {
         double fitnessAlpha, fitnessBeta, fitnessDelta;
 
         int iteration = -1;
-        while (iteration++ < this->maxIterations ||
-               utils::getCurrentTime() < this->runningTime) {
+        while (iteration++ < this->maxIterations || utils::getCurrentTime() < this->runningTime) {
             for (size_t i = 0; i < this->numberOfAgents; i++) {
                 if (alpha.empty() || wolvesFitness[i] < fitnessAlpha) {
                     alpha = wolves[i];
@@ -104,13 +105,10 @@ template <class T> class GreyWolfOptimizer : public GlobalSolver<T> {
                     r2 = utils::getRandom();
                     double A3 = 2 * a * r1 - a;
                     double C3 = 2 * r2;
-                    const double dDelta =
-                        std::abs(C3 * delta[j] - wolves[i][j]);
+                    const double dDelta = std::abs(C3 * delta[j] - wolves[i][j]);
                     const double X3 = delta[j] - A3 * dDelta;
 
-                    wolves[i][j] =
-                        max(this->problem->getLb()[j],
-                        min(X1 + X2 + X3 / 3, this->problem->getUb()[j]));
+                    wolves[i][j] = max(this->problem->getLb()[j], min(X1 + X2 + X3 / 3, this->problem->getUb()[j]));
                 }
             }
 
@@ -121,8 +119,7 @@ template <class T> class GreyWolfOptimizer : public GlobalSolver<T> {
                     wolvesFitness[i] = this->problem->evaluate(wolves[i]);
                     break;
                 case RepresentationType::INDIRECT:
-                    shared_ptr<Solution<T>> sol =
-                        this->problem->construct(wolves[i]);
+                    shared_ptr<Solution<T>> sol = this->problem->construct(wolves[i]);
                     wolvesFitness[i] = sol->getFitness();
                     break;
                 }
@@ -130,9 +127,7 @@ template <class T> class GreyWolfOptimizer : public GlobalSolver<T> {
                 this->updateGlobalBest(wolves[i], wolvesFitness[i], true);
             }
         }
-        cout << "Best solution " << this->globalBestFitness
-             << " Running time: " << utils::getCurrentTime() << endl
-             << "Best solution decision variables: ";
+        cout << "Best solution " << this->globalBestFitness << " Running time: " << utils::getCurrentTime() << endl << "Best solution decision variables: ";
         utils::printVector(this->globalBest);
     }
 };

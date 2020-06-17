@@ -20,6 +20,7 @@ SOURCES += heurisko.cpp
 HEADERS += \
     entities/solution.h \
     entities/problem.h \
+    examples/combinatorial/indirect/vrp.h \
     examples/continuous/direct/functions.h \
     examples/continuous/indirect/rastrigin.h \
     examples/continuous/direct/ackley.h \
@@ -31,6 +32,7 @@ HEADERS += \
     solvers/parameters.h \
     solvers/particleswarmoptimization.h \
     solvers/solver.h \
+    util/timer.h \
     util/util.h \
     util/tspreader.h \
     examples/combinatorial/indirect/tsp.h \

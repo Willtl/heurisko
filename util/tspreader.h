@@ -11,19 +11,23 @@
 #include <utility>
 #include <vector>
 
-namespace reader {
+namespace reader
+{
 std::string instancesPath;
 enum TspInstance { A280, EIL51, EIL76, XQF131 };
-std::map<TspInstance, std::string> instanceNames = {{TspInstance::A280, "a280.tsp"}, {TspInstance::EIL51, "eil51.tsp"}, {TspInstance::EIL76, "eil76.tsp"}, {TspInstance::XQF131, "xqf131.tsp"}};
+std::map<TspInstance, std::string> instanceNames = {
+    {TspInstance::A280, "a280.tsp"}, {TspInstance::EIL51, "eil51.tsp"}, {TspInstance::EIL76, "eil76.tsp"}, {TspInstance::XQF131, "xqf131.tsp"}};
 std::vector<std::vector<double>> distanceMatrix;
 
-bool existsFileAtPath(const std::filesystem::path &p, std::filesystem::file_status s = std::filesystem::file_status{}) {
+bool existsFileAtPath(const std::filesystem::path &p, std::filesystem::file_status s = std::filesystem::file_status{})
+{
     if (std::filesystem::status_known(s) ? std::filesystem::exists(s) : std::filesystem::exists(p))
         return true;
     return false;
 }
 
-bool existsInstancesFolder() {
+bool existsInstancesFolder()
+{
     std::string currentPath = std::filesystem::current_path().u8string();
     std::filesystem::path instancesPath = std::filesystem::u8path(currentPath + "\\instances\\");
 
@@ -40,7 +44,8 @@ bool existsInstancesFolder() {
     }
 }
 
-std::vector<std::string> split(const std::string &str, char delim) {
+std::vector<std::string> split(const std::string &str, char delim)
+{
     std::vector<std::string> strings;
     size_t start;
     size_t end = 0;
@@ -53,7 +58,8 @@ std::vector<std::string> split(const std::string &str, char delim) {
 
 double euclideanDistance(double x1, double y1, double x2, double y2) { return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2)); }
 
-void calculateDistances(const std::vector<std::pair<double, double>> &rawNodes, std::vector<std::vector<double>> &distanceMatrix) {
+void calculateDistances(const std::vector<std::pair<double, double>> &rawNodes, std::vector<std::vector<double>> &distanceMatrix)
+{
     const int dimension = rawNodes.size();
     distanceMatrix = std::vector<std::vector<double>>(dimension, std::vector<double>(dimension, 0));
     for (size_t i = 0; i < dimension; i++)
@@ -61,7 +67,8 @@ void calculateDistances(const std::vector<std::pair<double, double>> &rawNodes, 
             distanceMatrix[i][j] = round(euclideanDistance(rawNodes[i].first, rawNodes[i].second, rawNodes[j].first, rawNodes[j].second));
 }
 
-std::vector<std::vector<double>> readTspInstance(TspInstance instance) {
+std::vector<std::vector<double>> readTspInstance(TspInstance instance)
+{
     // Check if instances folder is placed at correct path
     reader::existsInstancesFolder();
 
