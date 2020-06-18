@@ -15,7 +15,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 QMAKE_CXXFLAGS += /O2 /openmp
 QMAKE_LFLAGS += /openmp
 
-SOURCES += heurisko.cpp
+SOURCES += examples/heurisko.cpp
  
 HEADERS += \
     entities/solution.h \

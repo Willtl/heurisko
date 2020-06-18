@@ -26,26 +26,39 @@ public:
     {
         this->fitness = 0;
         this->vehicleRoutes = std::vector<std::vector<int>>(vrp::numberVehicles);
+
         // Create an permutation of the nodes
         this->createPermutation(decVar);
+
         // Define assignment of the nodes to the vehicles
         this->createAssignment(decVar);
 
-        // utils::printVector<std::vector<int>>(this->permutation);
         // utils::printVector<std::vector<int>>(this->assigment);
+        // utils::printVector<std::vector<int>>(this->permutation);
 
         this->calculateFitness2();
     }
 
     void print() override
     {
-        std::cout << "Path: ";
-        for (size_t i = 0; i < this->dimension; i++) {
-            int index = permutation[i];
-            if (i + 1 < this->dimension)
-                std::cout << index + 1 << ", ";
+        ps << "Obj. value: " << this->fitness << pe;
+
+        std::cout << "Assignment: ";
+        for (size_t i = 0; i < this->dimension / 2; i++) {
+            int index = this->assigment[i];
+            if (i + 1 < this->dimension / 2)
+                std::cout << index << ", ";
             else
-                std::cout << index + 1 << "\n";
+                std::cout << index << "\n";
+        }
+
+        std::cout << "Permutation: ";
+        for (size_t i = 0; i < this->dimension / 2; i++) {
+            int index = permutation[i];
+            if (i + 1 < this->dimension / 2)
+                std::cout << index << ", ";
+            else
+                std::cout << index << "\n";
         }
     }
 
@@ -74,7 +87,8 @@ protected:
         }
     }
 
-    // Not much difference but calculateFitness2 is more reliable and leads to better performance overall
+    // Not much difference in terms of performance but calculateFitness2
+    // is more reliable and leads to better performance overall
     void calculateFitness1()
     {
         // Computes the distance of the route of each vehicle and keep the max
