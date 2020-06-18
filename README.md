@@ -30,8 +30,8 @@ Note that the methods below require that the `void localSearch()` function had b
 
 ### Problems addressed with the framework in the examples folder:
 - Continuous optimization, non-convex functions
-   - Rastrigin
-   - Ackley
+   - Rastrigin (indirect representation)
+   - Ackley    (direct   representation)
 - Combinatorial optimization
    - Traveling  salesman problem
       - 2-opt-based local search
