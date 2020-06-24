@@ -200,7 +200,7 @@ public:
         vrp::distanceMatrix = _distanceMatrix;
     }
 
-    std::shared_ptr<Solution<double>> construct(std::vector<encoding> &decisionVariables) override
+    std::shared_ptr<Solution<encoding>> construct(std::vector<encoding> &decisionVariables) override
     {
         std::shared_ptr<VRPSolution> solution = std::make_shared<VRPSolution>(this->dimension, decisionVariables);
         // solution->localSearch();

@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <memory>
 #include <random>
@@ -7,17 +6,10 @@
 #include "entities/solution.h"
 #include "examples/combinatorial/indirect/vrp.h"
 #include "solvers/differentialevolution.h"
-#include "solvers/geneticalgorithm.h"
-#include "solvers/greywolfoptimizer.h"
-#include "solvers/iteratedlocalseach.h"
 #include "solvers/parameters.h"
-#include "solvers/particleswarmoptimization.h"
 #include "util/timer.h"
-#include "util/tspreader.h"
 #include "util/util.h"
 
-void travellingSalesmanProblemExample();
-void continuousOptimizationProblemExample();
 void vehicleRoutingProblemExample();
 void vrpDecodingBenchmark();
 
@@ -25,7 +17,7 @@ int main(int argc, char *argv[])
 {
     vehicleRoutingProblemExample();
 
-    // This can be used to benchmark decoding strategies
+    // Benchmarking decoding strategies
     /*{
         Timer timer;
         vrpDecodingBenchmark();
@@ -33,8 +25,14 @@ int main(int argc, char *argv[])
     exit(EXIT_SUCCESS);
 }
 
+// A simple vehicle routing problem example
 void vehicleRoutingProblemExample()
 {
+    // The index of the depot
+    const int depotIndex = 0;
+    // Number of vechicles
+    const int numberOfVehicles = 4;
+    // Distance between nodes to be visited
     std::vector<std::vector<double>> distanceMatrix = {
         {0, 548, 776, 696, 582, 274, 502, 194, 308, 194, 536, 502, 388, 354, 468, 776, 662},
         {548, 0, 684, 308, 194, 502, 730, 354, 696, 742, 1084, 594, 480, 674, 1016, 868, 1210},
@@ -54,9 +52,10 @@ void vehicleRoutingProblemExample()
         {776, 868, 1552, 560, 674, 1050, 1278, 742, 1084, 810, 1152, 274, 388, 422, 764, 0, 798},
         {662, 1210, 754, 1358, 1244, 708, 480, 856, 514, 468, 354, 844, 730, 536, 194, 798, 0},
     };
-    // Distance matrix gives the distances, depot is node index is 0, 4 vehicles
-    const std::shared_ptr<VehicleRoutingProblem> vrp =
-        make_shared<VehicleRoutingProblem>(distanceMatrix.size(), 0, 4, distanceMatrix, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
+
+    // Object that will be used to evaluate solutions and perform local search
+    const std::shared_ptr<VehicleRoutingProblem> vrp = std::make_shared<VehicleRoutingProblem>(distanceMatrix.size(), depotIndex, numberOfVehicles, distanceMatrix,
+                                                   OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
 
     // Check solvers/parameter.h file to understand the definition of the parameters
     DifferentialEvolutionParameters parameters = {16, 0.0, 0.9, 5 + 1, false};
@@ -87,9 +86,9 @@ void vrpDecodingBenchmark()
         {662, 1210, 754, 1358, 1244, 708, 480, 856, 514, 468, 354, 844, 730, 536, 194, 798, 0},
     };
     const std::shared_ptr<VehicleRoutingProblem> tsp =
-        make_shared<VehicleRoutingProblem>(distanceMatrix.size(), 0, 4, distanceMatrix, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
+        std::make_shared<VehicleRoutingProblem>(distanceMatrix.size(), 0, 4, distanceMatrix, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
 
-    std::vector<std::vector<double>> decisionVariables(10000000, std::vector<double>(distanceMatrix.size() * 2));
+    std::vector<std::vector<encoding>> decisionVariables(10000000, std::vector<double>(distanceMatrix.size() * 2));
 #pragma omp parallel for
     for (int i = 0; i < 10000000; i++) {
         tsp->fillRandomDecisionVariables(decisionVariables[i]);

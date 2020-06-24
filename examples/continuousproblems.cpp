@@ -20,34 +20,33 @@
 #include "util/util.h"
 
 // Continuous problem with indirect representation
-void continuousIndirectExample();
 void continuousDirectExample();
+void continuousIndirectExample();
 
 int main(int argc, char *argv[])
 {
     continuousDirectExample();
     continuousIndirectExample();
-
     exit(EXIT_SUCCESS);
+}
+
+void continuousDirectExample()
+{
+    const std::shared_ptr<AckleyFunction> prob = make_shared<AckleyFunction>(OptimizationStrategy::MINIMIZE, RepresentationType::DIRECT);
+
+    DifferentialEvolutionParameters parameters = {8, 0.2, 0.9, 600 + 1, false};
+    DifferentialEvolution<encoding> de(parameters, prob);
+    de.setRunningTime(600);
+    de.solve();
 }
 
 void continuousIndirectExample()
 {
     const int dimension = 100;
-    const std::shared_ptr<RastriginFunction> rastrigin = make_shared<RastriginFunction>(dimension, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
+    const std::shared_ptr<RastriginFunction> prob = make_shared<RastriginFunction>(dimension, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
 
     DifferentialEvolutionParameters parameters = {8, 0.5 / dimension, 0.9, 600 + 1, false};
-    DifferentialEvolution<encoding> de(parameters, rastrigin);
-    de.setRunningTime(600);
-    de.solve();
-}
-
-void continuousDirectExample()
-{
-    const std::shared_ptr<AckleyFunction> rastrigin = make_shared<AckleyFunction>(OptimizationStrategy::MINIMIZE, RepresentationType::DIRECT);
-
-    DifferentialEvolutionParameters parameters = {8, 0.2, 0.9, 600 + 1, false};
-    DifferentialEvolution<encoding> de(parameters, rastrigin);
+    DifferentialEvolution<encoding> de(parameters, prob);
     de.setRunningTime(600);
     de.solve();
 }
