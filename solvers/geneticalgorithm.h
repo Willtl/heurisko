@@ -180,8 +180,7 @@ public:
     {
         double EPS = 1.0e-14;
         // y1 stores the value for the 1st child; y2 the value for the 2nd child; yl (notice
-        // it's an L not a 1) holds the lower limit for the variable yu holds the upper
-        // limit
+        // it's an L not a 1) holds the lower limit for the variable yu holds the upper limit
         double y1, y2, yl, yu;
         // betaq, in the paper, is the symbol beta with a line above
         double alpha, beta, betaq;

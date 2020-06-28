@@ -6,7 +6,8 @@
 class AckleyFunction : public Problem<double>
 {
 public:
-    AckleyFunction(OptimizationStrategy strategy, RepresentationType repType) : Problem(2, strategy, repType)
+    // Minimize ackley function (two dimensional) with direct representation
+    AckleyFunction() : Problem(2, OptimizationStrategy::MINIMIZE, RepresentationType::DIRECT)
     {
         this->lb = std::vector<double>{-5, -5};
         this->ub = std::vector<double>{5, 5};

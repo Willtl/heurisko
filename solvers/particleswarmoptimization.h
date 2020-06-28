@@ -6,17 +6,15 @@
 #include <iostream>
 #include <memory>
 
-using namespace std;
-
 template <class T>
 class ParticleSwarmOptimization : public GlobalSolver<T>
 {
 public:
-    ParticleSwarmOptimization(int numberOfParticles, double c1, double c2, double wMin, double wMax, double vMax, shared_ptr<Problem<T>> prob)
+    ParticleSwarmOptimization(int numberOfParticles, double c1, double c2, double wMin, double wMax, double vMax, std::shared_ptr<Problem<T>> prob)
         : GlobalSolver<T>(numberOfParticles, prob)
     {
         if (this->numberOfAgents < 4) {
-            cerr << "The number of particles needs to be equal or higher than 4" << endl;
+            std::cerr << "The number of particles needs to be equal or higher than 4" << std::endl;
             exit(EXIT_FAILURE);
         }
 
@@ -24,7 +22,7 @@ public:
         this->c2 = c2;
         this->wMin = wMin;
         this->wMax = wMax;
-        this->vMax = vector<double>(this->problem->getDimension());
+        this->vMax = std::vector<double>(this->problem->getDimension());
         for (size_t i = 0; i < this->problem->getDimension(); i++) {
             //            vMax[i] = 0.5 * (this->problem->getUb()[i] - this->problem->getLb()[i]);
             this->vMax[i] = vMax;
@@ -36,25 +34,25 @@ public:
     void solve()
     {
         if (this->maxIterations == 0 && this->runningTime == 0) {
-            cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
+            std::cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
                 "define a stopping criteria!"
                  << endl;
             exit(EXIT_FAILURE);
         } else
-            cout << "Starting ParticleSwarmOptimization search procedure" << endl;
+            std::cout << "Starting ParticleSwarmOptimization search procedure" << std::endl;
 
         utils::startTimeCounter();
 
         // Current population
-        cout << this->numberOfAgents << endl;
-        vector<vector<double>> particles(this->numberOfAgents);
+        std::cout << this->numberOfAgents << std::endl;
+        std::vector<std::vector<double>> particles(this->numberOfAgents);
 
         // Define random starting positions
         for (size_t i = 0; i < this->numberOfAgents; i++)
             this->problem->fillRandomDecisionVariables(particles[i]);
 
         // Evaluate particles
-        vector<double> particlesFitness(this->numberOfAgents);
+        std::vector<double> particlesFitness(this->numberOfAgents);
         for (size_t i = 0; i < this->numberOfAgents; i++) {
             // this->problem->current = utils::getCurrentTime();
             switch (this->problem->getRepType()) {
@@ -70,11 +68,11 @@ public:
         }
 
         // Keep track of the best position of each particle and
-        vector<vector<double>> particlesBestPosition = particles;
-        vector<double> particlesBestFitness = particlesFitness;
+        std::vector<std::vector<double>> particlesBestPosition = particles;
+        std::vector<double> particlesBestFitness = particlesFitness;
 
         // Velocity of each particle
-        vector<vector<double>> velocities(this->numberOfAgents, vector<double>(this->problem->getDimension(), 0));
+        std::vector<std::vector<double>> velocities(this->numberOfAgents, std::vector<double>(this->problem->getDimension(), 0));
 
         int iteration = -1;
         while (iteration++ < this->maxIterations || utils::getCurrentTime() < this->runningTime) {
@@ -122,7 +120,7 @@ public:
 
 private:
     double c1, c2, wMax, wMin;
-    vector<double> vMax;
+    std::vector<double> vMax;
 };
 
 #endif // PARTICLESWARMOPTIMIZATION_H

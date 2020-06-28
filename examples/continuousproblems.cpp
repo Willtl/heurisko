@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
 void continuousDirectExample()
 {
-    const std::shared_ptr<AckleyFunction> prob = make_shared<AckleyFunction>(OptimizationStrategy::MINIMIZE, RepresentationType::DIRECT);
+    const std::shared_ptr<AckleyFunction> prob = std::make_shared<AckleyFunction>();
 
     DifferentialEvolutionParameters parameters = {8, 0.2, 0.9, 600 + 1, false};
     DifferentialEvolution<encoding> de(parameters, prob);
@@ -43,7 +43,7 @@ void continuousDirectExample()
 void continuousIndirectExample()
 {
     const int dimension = 100;
-    const std::shared_ptr<RastriginFunction> prob = make_shared<RastriginFunction>(dimension, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
+    const std::shared_ptr<RastriginFunction> prob = std::make_shared<RastriginFunction>(dimension);
 
     DifferentialEvolutionParameters parameters = {8, 0.5 / dimension, 0.9, 600 + 1, false};
     DifferentialEvolution<encoding> de(parameters, prob);

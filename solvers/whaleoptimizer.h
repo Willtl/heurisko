@@ -6,8 +6,6 @@
 #include <iostream>
 #include <memory>
 
-using namespace std;
-
 template <class T>
 class WhaleOptimizer : public GlobalSolver<T>
 {

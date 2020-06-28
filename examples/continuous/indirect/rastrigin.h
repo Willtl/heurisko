@@ -8,7 +8,7 @@ typedef double encoding;
 class RastriginSolution : public Solution<encoding>
 {
 public:
-    RastriginSolution(int dimension, std::vector<encoding> &decVar) : Solution(dimension, decVar)
+    RastriginSolution(const int dimension, std::vector<encoding> &decVar) : Solution(dimension, decVar)
     {
         double A = 10, sum = 0;
         for (size_t i = 0; i < dimension; i++) {
@@ -24,7 +24,7 @@ protected:
 class RastriginFunction : public Problem<encoding>
 {
 public:
-    RastriginFunction(int dimension, OptimizationStrategy strategy, RepresentationType repType) : Problem(dimension, strategy, repType)
+    RastriginFunction(const int dimension) : Problem(dimension, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT)
     {
         this->lb = std::vector<encoding>(dimension);
         this->ub = std::vector<encoding>(dimension);

@@ -6,16 +6,14 @@
 #include <iostream>
 #include <memory>
 
-using namespace std;
-
 template <class T>
 class GreyWolfOptimizer : public GlobalSolver<T>
 {
 public:
-    GreyWolfOptimizer(int numberOfAgents, shared_ptr<Problem<T>> prob) : GlobalSolver<T>(numberOfAgents, prob)
+    GreyWolfOptimizer(int numberOfAgents, std::shared_ptr<Problem<T>> prob) : GlobalSolver<T>(numberOfAgents, prob)
     {
         if (this->numberOfAgents < 3) {
-            cerr << "The number of individuals needs to be equal or higher than 3" << endl;
+            std::cerr << "The number of individuals needs to be equal or higher than 3" << std::endl;
             exit(EXIT_FAILURE);
         }
 
@@ -25,24 +23,24 @@ public:
     void solve()
     {
         if (this->maxIterations == 0 && this->runningTime == 0) {
-            cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
-                "define a stopping criteria!"
-                 << endl;
+            std::cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
+                     "define a stopping criteria!"
+                  << endl;
             exit(EXIT_FAILURE);
         } else
-            cout << "Grey Wolf Optimizer search procedure" << endl;
+            std::cout << "Grey Wolf Optimizer search procedure" << std::endl;
 
         utils::startTimeCounter();
 
         // Current population
-        cout << this->numberOfAgents << endl;
-        vector<vector<double>> wolves(this->numberOfAgents);
+        std::cout << this->numberOfAgents << endl;
+        std::vector<std::vector<double>> wolves(this->numberOfAgents);
 #pragma omp parallel for
         for (size_t i = 0; i < this->numberOfAgents; i++)
             this->problem->fillRandomDecisionVariables(wolves[i]);
 
         // Stores the objective value of each individual
-        vector<double> wolvesFitness(this->numberOfAgents);
+        std::vector<double> wolvesFitness(this->numberOfAgents);
 #pragma omp parallel for
         for (size_t i = 0; i < this->numberOfAgents; i++) {
             switch (this->problem->getRepType()) {
@@ -59,7 +57,7 @@ public:
             this->updateGlobalBest(wolves[i], wolvesFitness[i], true);
         }
 
-        vector<double> alpha, beta, delta;
+        std::vector<double> alpha, beta, delta;
         double fitnessAlpha, fitnessBeta, fitnessDelta;
 
         int iteration = -1;
@@ -119,7 +117,7 @@ public:
                     wolvesFitness[i] = this->problem->evaluate(wolves[i]);
                     break;
                 case RepresentationType::INDIRECT:
-                    shared_ptr<Solution<T>> sol = this->problem->construct(wolves[i]);
+                    std::shared_ptr<Solution<T>> sol = this->problem->construct(wolves[i]);
                     wolvesFitness[i] = sol->getFitness();
                     break;
                 }
@@ -127,7 +125,7 @@ public:
                 this->updateGlobalBest(wolves[i], wolvesFitness[i], true);
             }
         }
-        cout << "Best solution " << this->globalBestFitness << " Running time: " << utils::getCurrentTime() << endl << "Best solution decision variables: ";
+        std::cout << "Best solution " << this->globalBestFitness << " Running time: " << utils::getCurrentTime() << std::endl << "Best solution decision variables: ";
         utils::printVector(this->globalBest);
     }
 };
