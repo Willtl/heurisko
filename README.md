@@ -37,6 +37,5 @@ Note that the methods below require that the `void localSearch()` function had b
       - 2-opt-based local search
       - swap-based local search
    - Vehicle routing problem
-      - two decoding strategies
-      - local search under development
+      - two decoding strategies 
    
