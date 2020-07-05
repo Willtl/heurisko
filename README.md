@@ -22,7 +22,7 @@ The project uses qmake, which, similarly to cmake, is responsible for generating
 - Opposition-based learning
 
 ### List of implemented single-solution metaheuristics:
-Note that the methods below require that the `void localSearch()` function had been overridden in the solution class.
+The methods below require that the `void localSearch()` function had been overridden in the solution class.
 - Iterated local search
    - Random perturbation
    - Swap perturbation
