@@ -39,6 +39,51 @@ public:
         this->calculateFitness2();
     }
 
+    // Encodes permutation into continuous domain
+    // The lowest the index, the lowest is the continuous value
+    void encode(const std::vector<int> &permutation, const std::vector<int> &assignment, std::vector<double> &decisionVariables)
+    {
+
+    }
+
+    // 2-opt Swap mechanism
+    // Reverse the direction of the path between indexes start and end
+    void twoOptSwap(const int start, const int end, std::vector<int> &newPermutation)
+    {
+        newPermutation = std::vector<int>(dimension);
+        for (int i = 0; i < start; i++)
+            newPermutation[i] = permutation[i];
+        int counter = start;
+        for (int i = end; i >= start; i--) {
+            newPermutation[counter] = permutation[i];
+            counter++;
+        }
+        for (int i = end + 1; i < permutation.size(); i++)
+            newPermutation[i] = permutation[i];
+    }
+
+    // This 2-opt neighborhood function
+    void localSearch() override
+    {
+        std::vector<int> newPermutation(dimension);
+        std::vector<double> newDecisionVariables(dimension);
+        std::vector<double> bestDecisionVariables;
+        std::shared_ptr<VRPSolution> bestNeighbor = NULL;
+        while (false) {
+            // Replace current solution if the best neighbor is better, else stop local search
+            if (bestNeighbor != NULL && bestNeighbor->fitness < this->fitness) {
+                std::shared_ptr<VRPSolution> best = std::make_shared<VRPSolution>(this->dimension, bestDecisionVariables);
+                this->fitness = best->fitness;
+                this->permutation = best->permutation;
+                this->decisionVariables = best->decisionVariables;
+                break;
+            } else
+                break;
+        }
+
+        ps << "after local search " << this->fitness << pe;
+    }
+
     void print() override
     {
         ps << "Obj. value: " << this->fitness << pe;
@@ -63,9 +108,11 @@ public:
     }
 
 protected:
-    std::vector<int> permutation; // stores the permutation of the nodes, i.e., the order in which the nodes are visited
-    std::vector<int> assigment;   // stores the assignment of the nodes to the vehicles
-    std::vector<std::vector<int>> vehicleRoutes;
+    std::vector<int> permutation;		     // stores the permutation of the nodes, i.e., the order in which the nodes are visited
+    std::vector<int> assigment;		     // stores the assignment of the nodes to the vehicles
+    std::vector<std::vector<int>> vehicleRoutes; // keeps the sub permutation that denotes the route of each vehicle
+    std::vector<int> vehicleRoutesLength;	     // length of each route
+    int maxRoute;				     // index of the vehicle with maximal route legth
 
     void createPermutation(const std::vector<encoding> &decisionVariables)
     {
@@ -135,6 +182,7 @@ protected:
             vehicleRoutes[i] = std::vector<int>();
             vehicleRoutes[i].reserve(dimension / 2);
         }
+        vehicleRoutesLength = std::vector<int>(vrp::numberVehicles);
 
         // Create the route (sub-permutation) of each vehicle
         for (size_t i = 0; i < permutation.size(); i++) {
@@ -146,25 +194,27 @@ protected:
         }
 
         // Computes the distance of the route of each vehicle and keep the max
-        int maxDistance = 0, currentDistance;
+        int maxDistance = 0;
         for (size_t i = 0; i < vrp::numberVehicles; i++) {
             if (vehicleRoutes[i].size() > 0) {
-                currentDistance = 0;
+                vehicleRoutesLength[i] = 0;
                 // From depot to first node
                 int index1 = vrp::depot;
                 int index2 = vehicleRoutes[i][0];
-                currentDistance += vrp::distanceMatrix[index1][index2];
+                vehicleRoutesLength[i] += vrp::distanceMatrix[index1][index2];
                 // From the first node to the next to last
                 for (size_t j = 0; j < vehicleRoutes[i].size() - 1; j++) {
                     index1 = vehicleRoutes[i][j];
                     index2 = vehicleRoutes[i][j + 1];
-                    currentDistance += vrp::distanceMatrix[index1][index2];
+                    vehicleRoutesLength[i] += vrp::distanceMatrix[index1][index2];
                 }
                 // From last to depot
                 index1 = vehicleRoutes[i][vehicleRoutes[i].size() - 1];
                 index2 = vrp::depot;
-                currentDistance += vrp::distanceMatrix[index1][index2];
-                maxDistance = std::max(maxDistance, currentDistance);
+                vehicleRoutesLength[i] += vrp::distanceMatrix[index1][index2];
+                maxDistance = std::max(maxDistance, vehicleRoutesLength[i]);
+                if (maxDistance == vehicleRoutesLength[i])
+                    maxRoute = i;
             }
         }
 

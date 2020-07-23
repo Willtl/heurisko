@@ -15,7 +15,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 QMAKE_CXXFLAGS += /O2 /openmp
 QMAKE_LFLAGS += /openmp
 
-SOURCES += examples/continuousproblems.cpp
+SOURCES += examples/vehicleroutingproblem.cpp
  
 HEADERS += \
     entities/solution.h \

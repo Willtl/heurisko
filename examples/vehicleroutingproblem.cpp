@@ -15,13 +15,10 @@ void vrpDecodingBenchmark();
 
 int main(int argc, char *argv[])
 {
-    vehicleRoutingProblemExample();
+    // vehicleRoutingProblemExample();
 
     // Benchmarking decoding strategies
-    /*{
-        Timer timer;
-        vrpDecodingBenchmark();
-    }*/
+    vrpDecodingBenchmark();
     exit(EXIT_SUCCESS);
 }
 
@@ -88,10 +85,17 @@ void vrpDecodingBenchmark()
     const std::shared_ptr<VehicleRoutingProblem> tsp =
         std::make_shared<VehicleRoutingProblem>(distanceMatrix.size(), 0, 4, distanceMatrix, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
 
-    std::vector<std::vector<encoding>> decisionVariables(10000000, std::vector<double>(distanceMatrix.size() * 2));
+    int numberOfSolutions = 1;
+    std::vector<std::vector<encoding>> decisionVariables(numberOfSolutions, std::vector<double>(distanceMatrix.size() * 2));
+
+    // Checking the time to create the solutions
+    {
+        Timer timer;
 #pragma omp parallel for
-    for (int i = 0; i < 10000000; i++) {
-        tsp->fillRandomDecisionVariables(decisionVariables[i]);
-        tsp->construct(decisionVariables[i]);
+        for (int i = 0; i < numberOfSolutions; i++) {
+            tsp->fillRandomDecisionVariables(decisionVariables[i]);
+            std::shared_ptr<Solution<double>> sol = tsp->construct(decisionVariables[i]);
+            sol->localSearch();
+        }
     }
 }

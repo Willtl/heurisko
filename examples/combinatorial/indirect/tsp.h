@@ -31,9 +31,8 @@ public:
     // The lowest the index, the lowest is the continuous value
     void encode(const std::vector<int> &permutation, std::vector<double> &decisionVariables)
     {
-        int dimension = permutation.size();
-        double share = 1.0 / dimension, acc = std::nextafter(0.0, 0.1);
-        for (size_t k = 0; k < dimension; k++) {
+        double share = 1.0 / this->dimension, acc = std::nextafter(0.0, 0.1);
+        for (size_t k = 0; k < this->dimension; k++) {
             const int index = permutation[k];
             decisionVariables[index] = acc;
             acc += share;
@@ -44,7 +43,7 @@ public:
     // Reverse the direction of the path between indexes start and end
     void twoOptSwap(const int start, const int end, std::vector<int> &newPermutation)
     {
-        newPermutation = std::vector<int>(dimension);
+        newPermutation = std::vector<int>(this->dimension);
         for (int i = 0; i < start; i++)
             newPermutation[i] = permutation[i];
         int counter = start;
