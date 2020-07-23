@@ -10,8 +10,6 @@
 
 #include "../../../entities/problem.h"
 
-typedef double encoding;
-
 namespace vrp
 {
 int depot;
@@ -19,10 +17,10 @@ int numberVehicles;
 std::vector<std::vector<double>> distanceMatrix;
 } // namespace vrp
 
-class VRPSolution : public Solution<encoding>
+class VRPSolution : public Solution<double>
 {
 public:
-    VRPSolution(const int dimension, std::vector<encoding> &decVar) : Solution(dimension, decVar)
+    VRPSolution(const int dimension, std::vector<double> &decVar) : Solution(dimension, decVar)
     {
         this->fitness = 0;
         this->vehicleRoutes = std::vector<std::vector<int>>(vrp::numberVehicles);
@@ -114,7 +112,7 @@ protected:
     std::vector<int> vehicleRoutesLength;	     // length of each route
     int maxRoute;				     // index of the vehicle with maximal route legth
 
-    void createPermutation(const std::vector<encoding> &decisionVariables)
+    void createPermutation(const std::vector<double> &decisionVariables)
     {
         permutation = std::vector<int>(this->dimension / 2);
         for (int i = 0; i < this->dimension / 2; i++)
@@ -123,7 +121,7 @@ protected:
               [&](int pos1, int pos2) { return std::tie(decisionVariables[pos1], pos1) < std::tie(decisionVariables[pos2], pos2); });
     }
 
-    void createAssignment(const std::vector<encoding> &decisionVariables)
+    void createAssignment(const std::vector<double> &decisionVariables)
     {
         // floor(cont_ms_chromo[i] * linear_operations[i]->resources.size());
         assigment = std::vector<int>(this->dimension / 2);
@@ -222,7 +220,7 @@ protected:
     }
 };
 
-class VehicleRoutingProblem : public Problem<encoding>
+class VehicleRoutingProblem : public Problem<double>
 {
 public:
     VehicleRoutingProblem(const int dimension, const int _depot, const int _numberVehicle, const std::vector<std::vector<double>> _distanceMatrix,
@@ -237,8 +235,8 @@ public:
         // Dimension * 2 since we have half of the decision variables to denote the permutation of the nodes,
         // and another half to denote to each node, the assigned vehicle. Check construct func. on the solution class
         this->dimension = dimension * 2;
-        this->lb = std::vector<encoding>(this->dimension);
-        this->ub = std::vector<encoding>(this->dimension);
+        this->lb = std::vector<double>(this->dimension);
+        this->ub = std::vector<double>(this->dimension);
 
         for (size_t i = 0; i < this->dimension; i++) {
             lb[i] = 0;
@@ -250,7 +248,7 @@ public:
         vrp::distanceMatrix = _distanceMatrix;
     }
 
-    std::shared_ptr<Solution<encoding>> construct(std::vector<encoding> &decisionVariables) override
+    std::shared_ptr<Solution<double>> construct(std::vector<double> &decisionVariables) override
     {
         std::shared_ptr<VRPSolution> solution = std::make_shared<VRPSolution>(this->dimension, decisionVariables);
         // solution->localSearch();

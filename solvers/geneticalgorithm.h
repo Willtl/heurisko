@@ -3,31 +3,26 @@
 
 #include "../entities/problem.h"
 #include "globalsolver.h"
+#include "parameters.h"
 #include <iostream>
 #include <memory>
-
-enum CrossoverType { UNIFORM, ONE_POINT, TWO_POINT, SIMULATED_BINARY };
-enum SelectionType { FITNESS_PROPORTIONATE, TOURNAMENT };
-enum MutationType { RANDOM_MUTATION, POLYNOMIAL, SWAP_MUTATION, SCRAMBLE_MUTATION };
 
 template <class T>
 class GeneticAlgorithm : public GlobalSolver<T>
 {
 public:
-    GeneticAlgorithm(int numberOfIndividuals, float crossoverRate, float mutationRate, CrossoverType crossoverType, SelectionType selectionType, MutationType mutationType,
-             std::shared_ptr<Problem<T>> prob)
-        : GlobalSolver<T>(numberOfIndividuals, prob)
+    GeneticAlgorithm(const GeneticAlgorithmParameters &parameters, std::shared_ptr<Problem<T>> prob) : GlobalSolver<T>(parameters.numbIndividuals, prob)
     {
         if (this->numberOfAgents < 2) {
             std::cerr << "The number of individuals needs to be equal or higher than 2" << std::endl;
             exit(EXIT_FAILURE);
         }
 
-        this->crossoverRate = crossoverRate;
-        this->mutationRate = mutationRate;
-        this->crossoverType = crossoverType;
-        this->selectionType = selectionType;
-        this->mutationType = mutationType;
+        this->crossoverRate = parameters.crossoverRate;
+        this->mutationRate = parameters.mutationRate;
+        this->crossoverType = parameters.crossoverType;
+        this->selectionType = parameters.selectionType;
+        this->mutationType = parameters.mutationType;
         puts("Genetic Algorithm instantiated");
     }
 

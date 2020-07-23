@@ -6,6 +6,7 @@
 #include "entities/solution.h"
 #include "examples/combinatorial/indirect/vrp.h"
 #include "solvers/differentialevolution.h"
+#include "solvers/geneticalgorithm.h"
 #include "solvers/parameters.h"
 #include "util/timer.h"
 #include "util/util.h"
@@ -15,10 +16,10 @@ void vrpDecodingBenchmark();
 
 int main(int argc, char *argv[])
 {
-    // vehicleRoutingProblemExample();
+    vehicleRoutingProblemExample();
 
     // Benchmarking decoding strategies
-    vrpDecodingBenchmark();
+    // vrpDecodingBenchmark();
     exit(EXIT_SUCCESS);
 }
 
@@ -54,11 +55,19 @@ void vehicleRoutingProblemExample()
     const std::shared_ptr<VehicleRoutingProblem> vrp = std::make_shared<VehicleRoutingProblem>(distanceMatrix.size(), depotIndex, numberOfVehicles, distanceMatrix,
                                                    OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
 
+    // Solving with Differential Evolution
     // Check solvers/parameter.h file to understand the definition of the parameters
-    DifferentialEvolutionParameters parameters = {16, 0.0, 0.9, 5 + 1, false};
-    DifferentialEvolution<encoding> de(parameters, vrp);
+    /*DifferentialEvolutionParameters dePar = {16, 0.0, 0.9, 5 + 1, false};
+    DifferentialEvolution<double> de(dePar, vrp);
     de.setRunningTime(5);
-    de.solve();
+    de.solve();*/
+
+
+    // Solving with Genetic Algorithm
+    GeneticAlgorithmParameters gaPar = {16, 0.25, 0.1, CrossoverType::UNIFORM, SelectionType::TOURNAMENT, MutationType::RANDOM_MUTATION};
+    GeneticAlgorithm<double> ga(gaPar, vrp);
+    ga.setRunningTime(5);
+    ga.solve();
 }
 
 void vrpDecodingBenchmark()
@@ -82,11 +91,12 @@ void vrpDecodingBenchmark()
         {776, 868, 1552, 560, 674, 1050, 1278, 742, 1084, 810, 1152, 274, 388, 422, 764, 0, 798},
         {662, 1210, 754, 1358, 1244, 708, 480, 856, 514, 468, 354, 844, 730, 536, 194, 798, 0},
     };
+
     const std::shared_ptr<VehicleRoutingProblem> tsp =
         std::make_shared<VehicleRoutingProblem>(distanceMatrix.size(), 0, 4, distanceMatrix, OptimizationStrategy::MINIMIZE, RepresentationType::INDIRECT);
 
     int numberOfSolutions = 1;
-    std::vector<std::vector<encoding>> decisionVariables(numberOfSolutions, std::vector<double>(distanceMatrix.size() * 2));
+    std::vector<std::vector<double>> decisionVariables(numberOfSolutions, std::vector<double>(distanceMatrix.size() * 2));
 
     // Checking the time to create the solutions
     {
