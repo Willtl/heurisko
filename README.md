@@ -29,7 +29,7 @@ The methods below require that the `void localSearch()` function had been overri
    - 2-opt perturbation
 
 ### Problems addressed with the framework in the examples folder:
-- Continuous optimization, non-convex functions
+- Non-convex continuous optimization examples
    - Rastrigin (indirect representation)
    - Ackley    (direct   representation)
 - Combinatorial optimization
