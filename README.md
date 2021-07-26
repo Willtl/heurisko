@@ -1,7 +1,7 @@
 # Heurisko - C++ open-source parallel framework for continuous and combinatorial optimization with metaheuristics
 
-### Linux usage 
-Install dependencies. Here I assume you have `gcc, openmp, 
+### Usage with GCC
+Lines `[15, 16]` on file `heurisko.pro` should be commented.
 ```  
 sudo apt update
 sudo apt upgrade
@@ -13,7 +13,8 @@ make
 ```
 Alternatively, you can download and install Qt [IDE and libraries](https://www.qt.io/download). Clone the repository and open the project's folder on the QtCreator IDE.
 
-### Windows usage
+### Usage with MSVC
+Lines `[9, 12]` on file `heurisko.pro` should be commented.
 Download and install Qt [IDE and libraries](https://www.qt.io/download), clone the repository and open the project's folder on the QtCreator IDE.
 
 ## List of implemented population-based metaheuristics:
