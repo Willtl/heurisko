@@ -35,7 +35,7 @@ Alternatively, you can download and install Qt [IDE and libraries](https://www.q
 - Particle Swarm Optimization
 - Grey Wolf Optimizer
 - Whale Optimization Algorithm
-- 
+
 #### The following strategies are associated with each populatiob-based metaheuristics:
 - Opposition-based learning
 
