@@ -15,6 +15,7 @@ Alternatively, you can download and install Qt [IDE and libraries](https://www.q
 
 ### Usage with MSVC
 Lines `[9, 12]` of `heurisko.pro` should be commented.
+
 Download and install Qt [IDE and libraries](https://www.qt.io/download), clone the repository and open the project's folder on the QtCreator IDE.
 
 ## List of implemented population-based metaheuristics:
