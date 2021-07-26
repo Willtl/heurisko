@@ -37,5 +37,3 @@ HEADERS += \
     util/tspreader.h \
     examples/combinatorial/indirect/tsp.h \
     solvers/iteratedlocalseach.h
-
-
