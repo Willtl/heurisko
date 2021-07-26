@@ -6,14 +6,14 @@ CONFIG -= app_bundle
 DEFINES += QT_DEPRECATED_WARNINGS
 
 # The flags below must be activated if you are using GCC compiler
-#QMAKE_CXXFLAGS -= -O1
-#QMAKE_CXXFLAGS -= -O2
-#QMAKE_CXXFLAGS += -O3 -fopenmp
-#QMAKE_LFLAGS += -fopenmp
+QMAKE_CXXFLAGS -= -O1
+QMAKE_CXXFLAGS -= -O2
+QMAKE_CXXFLAGS += -O3 -fopenmp
+QMAKE_LFLAGS += -fopenmp
 
 # The flags below must be activated if you are using MSVC compiler
-QMAKE_CXXFLAGS += /O2 /openmp
-QMAKE_LFLAGS += /openmp
+# QMAKE_CXXFLAGS += /O2 /openmp
+# QMAKE_LFLAGS += /openmp
 
 SOURCES += examples/vehicleroutingproblem.cpp
  
