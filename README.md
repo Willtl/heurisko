@@ -6,9 +6,6 @@ Install dependencies. Here I assume you have `gcc, openmp,
 sudo apt update
 sudo apt upgrade
 sudo apt install g++ libomp-dev qt5-qmake
-```
-Download and compile project.
-``` 
 git clone https://github.com/Willtl/heurisko.git
 qmake -makefile heurisko.pro
 make
