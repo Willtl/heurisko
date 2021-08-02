@@ -7,6 +7,7 @@ sudo apt update
 sudo apt upgrade
 sudo apt install g++ libomp-dev qt5-qmake
 git clone https://github.com/Willtl/heurisko.git
+cd heurisko
 qmake -makefile heurisko.pro
 make
 ./heurisko
