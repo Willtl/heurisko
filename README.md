@@ -4,7 +4,6 @@
 Lines `[15, 16]` of `heurisko.pro` should be commented.
 ```  
 sudo apt update
-sudo apt upgrade
 sudo apt install g++ libomp-dev qt5-qmake
 git clone https://github.com/Willtl/heurisko.git
 cd heurisko
