@@ -1,4 +1,4 @@
-# Heurisko - Parallel framework for continuous and combinatorial optimization with metaheuristics
+# Heurisko - Continuous and combinatorial optimization with metaheuristics
 ```  
 sudo apt update
 sudo apt install g++ libomp-dev qt5-qmake
