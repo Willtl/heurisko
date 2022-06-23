@@ -1,6 +1,6 @@
 # Heurisko
 
-Continuous and combinatorial optimization with metaheuristics
+Continuous and combinatorial optimization with metaheuristics.
 
 ```  
 sudo apt update
