@@ -1,7 +1,7 @@
 #ifndef GENETICALGORITHM_H
 #define GENETICALGORITHM_H
 
-#include "../entities/problem.h"
+#include "../problem.h"
 #include "globalsolver.h"
 #include "parameters.h"
 #include <iostream>

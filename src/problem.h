@@ -1,8 +1,8 @@
 #ifndef PROBLEM_H
 #define PROBLEM_H
 
-#include "../entities/solution.h"
-#include "../util/util.h"
+#include "solution.h"
+#include "util/util.h"
 #include <vector>
 
 enum OptimizationStrategy { MINIMIZE, MAXIMIZE };

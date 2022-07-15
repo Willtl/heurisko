@@ -1,7 +1,7 @@
 #ifndef PARTICLESWARMOPTIMIZATION_H
 #define PARTICLESWARMOPTIMIZATION_H
 
-#include "../entities/problem.h"
+#include "../problem.h"
 #include "globalsolver.h"
 #include <iostream>
 #include <memory>

@@ -29,7 +29,7 @@ bool existsFileAtPath(const std::filesystem::path &p, std::filesystem::file_stat
 bool existsInstancesFolder()
 {
     std::string currentPath = std::filesystem::current_path().u8string();
-    std::filesystem::path instancesPath = std::filesystem::u8path(currentPath + "\\instances\\");
+    std::filesystem::path instancesPath = std::filesystem::u8path(currentPath + "/examples/instances/");
 
     std::string formatedCurrentPath = currentPath;
     std::replace(formatedCurrentPath.begin(), formatedCurrentPath.end(), '\\', '/');
@@ -39,8 +39,10 @@ bool existsInstancesFolder()
     if (existsFileAtPath(instancesPath)) {
         std::cout << "Instances loaded from " << formatedInstancesPath << std::endl;
         reader::instancesPath = formatedInstancesPath;
+        return true;
     } else {
-        std::cerr << "You must copy the \"heuriskos/examples/instances\" folder into " << formatedCurrentPath << std::endl;
+        std::cerr << "Instance folder not found in path: " << formatedCurrentPath << std::endl;
+        return false;
     }
 }
 
@@ -68,13 +70,16 @@ void calculateDistances(const std::vector<std::pair<double, double>> &rawNodes, 
 }
 
 std::vector<std::vector<double>> readTspInstance(TspInstance instance)
-{
+{   
+    std::cout << "readtspinstance" << std::endl;
+
     // Check if instances folder is placed at correct path
-    reader::existsInstancesFolder();
+    bool exists = reader::existsInstancesFolder();
 
     // Define instance path
-    std::string instanceName = reader::instanceNames[instance];
+    std::string instanceName = reader::instanceNames[instance]; 
     std::string instancePath = reader::instancesPath + "/tsp/" + instanceName;
+    
     if (reader::existsFileAtPath(std::filesystem::u8path(instancePath))) {
         std::cout << instancePath << std::endl;
     }

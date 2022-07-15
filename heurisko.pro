@@ -15,25 +15,26 @@ QMAKE_LFLAGS += -fopenmp
 # QMAKE_CXXFLAGS += /O2 /openmp
 # QMAKE_LFLAGS += /openmp
 
-SOURCES += examples/vehicleroutingproblem.cpp
+SOURCES += examples/travellingsalesmanproblem.cpp
  
 HEADERS += \
-    entities/solution.h \
-    entities/problem.h \
+    src/solution.h \
+    src/problem.h \
     examples/combinatorial/indirect/vrp.h \
     examples/continuous/direct/functions.h \
     examples/continuous/indirect/rastrigin.h \
     examples/continuous/direct/ackley.h \
     examples/continuous/direct/crossintray.h \
-    solvers/differentialevolution.h \
-    solvers/globalsolver.h \
-    solvers/geneticalgorithm.h \
-    solvers/greywolfoptimizer.h \
-    solvers/parameters.h \
-    solvers/particleswarmoptimization.h \
-    solvers/solver.h \
-    util/timer.h \
-    util/util.h \
-    util/tspreader.h \
-    examples/combinatorial/indirect/tsp.h \
-    solvers/iteratedlocalseach.h
+    src/solvers/differentialevolution.h \
+    src/solvers/globalsolver.h \
+    src/solvers/geneticalgorithm.h \
+    src/solvers/greywolfoptimizer.h \
+    src/solvers/parameters.h \
+    src/solvers/particleswarmoptimization.h \
+    src/solvers/solver.h \
+    src/solvers/iteratedlocalseach.h \
+	src/util/timer.h \
+    src/util/util.h \
+    src/util/tspreader.h \
+    examples/combinatorial/indirect/tsp.h 
+    

@@ -3,13 +3,13 @@
 #include <random>
 #include <vector>
 
-#include "entities/solution.h"
-#include "examples/combinatorial/indirect/vrp.h"
-#include "solvers/differentialevolution.h"
-#include "solvers/geneticalgorithm.h"
-#include "solvers/parameters.h"
-#include "util/timer.h"
-#include "util/util.h"
+#include "../src/solution.h"
+#include "combinatorial/indirect/vrp.h"
+#include "../src/solvers/differentialevolution.h"
+#include "../src/solvers/geneticalgorithm.h"
+#include "../src/solvers/parameters.h"
+#include "../src/util/timer.h"
+#include "../src/util/util.h"
 
 void vehicleRoutingProblemExample();
 void vrpDecodingBenchmark();
@@ -57,17 +57,17 @@ void vehicleRoutingProblemExample()
 
     // Solving with Differential Evolution
     // Check solvers/parameter.h file to understand the definition of the parameters
-    /*DifferentialEvolutionParameters dePar = {16, 0.0, 0.9, 5 + 1, false};
+    DifferentialEvolutionParameters dePar = {16, 0.0, 0.9, 5 + 1, false};
     DifferentialEvolution<double> de(dePar, vrp);
     de.setRunningTime(5);
-    de.solve();*/
+    de.solve();
 
 
     // Solving with Genetic Algorithm
-    GeneticAlgorithmParameters gaPar = {16, 0.25, 0.1, CrossoverType::UNIFORM, SelectionType::TOURNAMENT, MutationType::RANDOM_MUTATION};
+    /*GeneticAlgorithmParameters gaPar = {16, 0.25, 0.1, CrossoverType::UNIFORM, SelectionType::TOURNAMENT, MutationType::RANDOM_MUTATION};
     GeneticAlgorithm<double> ga(gaPar, vrp);
     ga.setRunningTime(5);
-    ga.solve();
+    ga.solve();*/
 }
 
 void vrpDecodingBenchmark()

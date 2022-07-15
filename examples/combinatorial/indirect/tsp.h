@@ -8,7 +8,7 @@
 #include <string>
 #include <tuple>
 
-#include "../../../entities/problem.h"
+#include "../../../src/problem.h"
 
 typedef double encoding;
 

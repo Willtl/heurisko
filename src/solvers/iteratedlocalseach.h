@@ -1,8 +1,8 @@
 #ifndef ITERATEDLOCALSEACH_H
 #define ITERATEDLOCALSEACH_H
 
-#include "../entities/problem.h"
-#include "../entities/solution.h"
+#include "../problem.h"
+#include "../solution.h"
 #include "globalsolver.h"
 #include <iostream>
 #include <memory>

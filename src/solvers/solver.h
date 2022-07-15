@@ -1,8 +1,8 @@
 #ifndef SOLVER_H
 #define SOLVER_H
 
-#include "../entities/problem.h"
-#include "../entities/solution.h"
+#include "../problem.h"
+#include "../solution.h"
 #include <memory>
 
 template <class T>
