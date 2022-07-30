@@ -4,20 +4,19 @@
 #include <random>
 #include <vector>
 
-#include "entities/solution.h"
-#include "examples/continuous/direct/ackley.h"
-#include "examples/continuous/direct/crossintray.h"
-#include "examples/continuous/direct/functions.h"
-#include "examples/continuous/indirect/rastrigin.h"
-#include "solvers/differentialevolution.h"
-#include "solvers/geneticalgorithm.h"
-#include "solvers/greywolfoptimizer.h"
-#include "solvers/iteratedlocalseach.h"
-#include "solvers/parameters.h"
-#include "solvers/particleswarmoptimization.h"
-#include "util/timer.h"
-#include "util/tspreader.h"
-#include "util/util.h"
+#include "../src/solution.h"
+#include "continuous/direct/ackley.h"
+#include "continuous/direct/crossintray.h"
+#include "continuous/direct/functions.h"
+#include "continuous/indirect/rastrigin.h"
+#include "../src/solvers/differentialevolution.h"
+#include "../src/solvers/geneticalgorithm.h"
+#include "../src/solvers/greywolfoptimizer.h"
+#include "../src/solvers/iteratedlocalseach.h"
+#include "../src/solvers/parameters.h"
+#include "../src/solvers/particleswarmoptimization.h"
+#include "../src/util/timer.h" 
+#include "../src/util/util.h"
 
 // Continuous problem with indirect representation
 void continuousDirectExample();

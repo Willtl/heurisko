@@ -1,7 +1,7 @@
 #ifndef CROSSINTRAY_H
 #define CROSSINTRAY_H
 
-#include "../../../entities/problem.h"
+#include "../../../src/problem.h"
 
 class CrossInTrayFunction : public Problem<double>
 {

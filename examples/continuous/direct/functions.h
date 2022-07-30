@@ -1,7 +1,7 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-#include "../../../entities/problem.h"
+#include "../../../src/problem.h"
 #include "math.h"
 
 /*class BoothFunction : public Problem<double>

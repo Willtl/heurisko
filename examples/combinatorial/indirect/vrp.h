@@ -86,22 +86,22 @@ public:
     {
         ps << "Obj. value: " << this->fitness << pe;
 
-        std::cout << "Assignment: ";
+        ps << "Assignment: ";
         for (size_t i = 0; i < this->dimension / 2; i++) {
             int index = this->assigment[i];
             if (i + 1 < this->dimension / 2)
-                std::cout << index << ", ";
+                ps << index << ", ";
             else
-                std::cout << index << "\n";
+                ps << index << "\n";
         }
 
-        std::cout << "Permutation: ";
+        ps << "Permutation: ";
         for (size_t i = 0; i < this->dimension / 2; i++) {
             int index = permutation[i];
             if (i + 1 < this->dimension / 2)
-                std::cout << index << ", ";
+                ps << index << ", ";
             else
-                std::cout << index << "\n";
+                ps << index << "\n";
         }
     }
 
@@ -175,7 +175,7 @@ protected:
     // Decoding strategy two
     void calculateFitness2()
     {
-        // Initialize route sub-permutation of each vehicle and reserve (dimension/2) to avoid resize
+        // Initialize route sub-permutation of each vehicle
         for (size_t i = 0; i < vrp::numberVehicles; i++) {
             vehicleRoutes[i] = std::vector<int>();
             vehicleRoutes[i].reserve(dimension / 2);

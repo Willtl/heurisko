@@ -1,7 +1,7 @@
 #ifndef ACKLEY_H
 #define ACKLEY_H
 
-#include "../../../entities/problem.h"
+#include "../../../src/problem.h"
 
 class AckleyFunction : public Problem<double>
 {

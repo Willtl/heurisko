@@ -36,7 +36,7 @@ public:
         if (this->maxIterations == 0 && this->runningTime == 0) {
             std::cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
                 "define a stopping criteria!"
-                 << endl;
+                 << std::endl;
             exit(EXIT_FAILURE);
         } else
             std::cout << "Starting ParticleSwarmOptimization search procedure" << std::endl;

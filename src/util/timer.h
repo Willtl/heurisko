@@ -23,6 +23,7 @@ public:
         double ms = duration * 0.001;
         double sec = ms * 0.001;
 
+#pragma omp critical
         std::cout << "microsec. " << duration << ", millisec. " << ms << ", sec. " << sec << "\n";
     }
 

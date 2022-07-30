@@ -1,7 +1,7 @@
 #ifndef RASTRIGIN_H
 #define RASTRIGIN_H
 
-#include "../../../entities/problem.h"
+#include "../../../src/problem.h"
 
 typedef double encoding;
 

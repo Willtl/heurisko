@@ -25,7 +25,7 @@ public:
         if (this->maxIterations == 0 && this->runningTime == 0) {
             std::cerr << "Use \"setMaxIterations(int)\" or \"setRunningTime(double)\" to "
                      "define a stopping criteria!"
-                  << endl;
+                  << std::endl;
             exit(EXIT_FAILURE);
         } else
             std::cout << "Grey Wolf Optimizer search procedure" << std::endl;
@@ -33,7 +33,7 @@ public:
         utils::startTimeCounter();
 
         // Current population
-        std::cout << this->numberOfAgents << endl;
+        std::cout << this->numberOfAgents << std::endl;
         std::vector<std::vector<double>> wolves(this->numberOfAgents);
 #pragma omp parallel for
         for (size_t i = 0; i < this->numberOfAgents; i++)

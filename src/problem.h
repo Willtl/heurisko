@@ -27,6 +27,14 @@ public:
         exit(EXIT_FAILURE);
     }
 
+    // This is called during initialization (heuristics can be used here)
+    virtual std::shared_ptr<Solution<T>> initialize(std::vector<T> &decisionVariables)
+    {
+        std::cerr << "You must override @construct in your derived class" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // Construct given decision variables
     virtual std::shared_ptr<Solution<T>> construct(std::vector<T> &decisionVariables)
     {
         std::cerr << "You must override @construct in your derived class" << std::endl;
