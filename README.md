@@ -1,13 +1,13 @@
 # Heurisko
 
-Continuous and combinatorial optimization with metaheuristics.
+C++ parallel implementation of several metaheuristics for continuous and combinatorial optimization.
 
 ```  
-sudo apt update
-sudo apt install g++ libomp-dev qt5-qmake
+sudo apt update && sudo apt install g++ libomp-dev cmake
 git clone https://github.com/Willtl/heurisko.git
 cd heurisko
-qmake -makefile heurisko.pro
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release 
 make
 ./heurisko
 ```
