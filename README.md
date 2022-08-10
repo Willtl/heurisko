@@ -1,6 +1,6 @@
 # Heurisko
 
-C++ parallel implementation of several metaheuristics for continuous and combinatorial optimization.
+A C++ platform to perform parallel computations of optimization tasks via metaheuristics. 
 
 ```  
 sudo apt update && sudo apt install g++ libomp-dev cmake
